@@ -45,12 +45,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
 .config(function($stateProvider, $urlRouterProvider) {
 
   var config = {
-    apiKey: "AIzaSyDtoRohubH-ksh7g82fdM0lL4mRH7jjNx8",
-    authDomain: "salesranger-1f7f4.firebaseapp.com",
-    databaseURL: "https://salesranger-1f7f4.firebaseio.com",
-    projectId: "salesranger-1f7f4",
-    storageBucket: "salesranger-1f7f4.appspot.com",
-    messagingSenderId: "684372826209"
+    apiKey: "AIzaSyDPCYH1iMoeShApBOpjy9TzTDI2c0S9u0s",
+    authDomain: "pegaduan-395e6.firebaseapp.com",
+    databaseURL: "https://pegaduan-395e6.firebaseio.com",
+    projectId: "pegaduan-395e6",
+    storageBucket: "pegaduan-395e6.appspot.com",
+    messagingSenderId: "508166730489"
   };
   var fb = firebase.initializeApp(config);
   $stateProvider
