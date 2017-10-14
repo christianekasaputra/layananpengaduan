@@ -1,0 +1,111 @@
+<ion-view>
+  <ion-content>
+    <div class="right_col" role="main">
+      <div class="">
+        <div class="page-title">
+          <div class="title_left">
+            <h3>Profile</h3>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+        
+        <div class="row">
+          <div class="col-md-6 col-xs-12">
+            <div class="x_panel">
+              <div class="x_title">
+                <h2>Profile <small>Configure</small></h2>
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                  </li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="#">Settings 1</a>
+                      </li>
+                      <li><a href="#">Settings 2</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li><a class="close-link"><i class="fa fa-close"></i></a>
+                  </li>
+                </ul>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content">
+                <div class="profile_img">
+                  <div id="crop-avatar">
+                    <!-- Current avatar -->
+                    <img ng-show="item.photo !== undefined" class="img-responsive avatar-view" src="{{ item.photo }}">
+                  </div>
+                </div>
+                <br>
+
+                <!-- start form for validation -->
+                <form >
+                  <label>Name * :</label>
+                  <input type="text" class="form-control" ng-model="profile.name" required />
+
+                  <label for="desc">Desc * :</label>
+                  <textarea class="form-control" ng-model="profile.desc" required></textarea>
+
+                  <label><input type="checkbox" ng-click="addinfos()">Add Info ?</label><br>
+	                <div ng-repeat="item in infos">
+	                  <div class="form-group">
+		                <label>Information * :</label>
+		                <div>
+                      <select ng-show="item.sel" class="select2_single form-control" tabindex="-1" ng-model="item.isi" ng-options="information.title for information in informations | orderBy:'title'" ng-change="chanin(item.info)">
+                      </select>
+                      <input ng-hide="item.sel" type="text" class="form-control" ng-model="item.title" ng-click="editin(item.info)" required>
+                      <input type="text" class="form-control" ng-model="item.value" required/><br>
+                    </div>
+		              </div>
+	                </div>
+
+	              <label><input type="checkbox" ng-click="addtags()">Add Testimoni ?</label><br>
+	                <div ng-repeat="item in tests track by $index">
+	                  <div class="form-group">
+  		                <label>Name * :</label>
+                      <input type="text" class="form-control" ng-model="item.name" required />
+
+                      <label>Title * :</label>
+                      <input type="text" class="form-control" ng-model="item.title" required />
+
+                      <label>Company * :</label>
+                      <input type="text" class="form-control" ng-model="item.company" required />
+
+                      <label for="desc">Desc * :</label>
+                      <textarea class="form-control" ng-model="item.desc" required></textarea>
+
+                      <label for="picture">Picture * :</label>
+                      <img ng-show="item.picture !== undefined" class="img-responsive avatar-view" src="{{ item.picture }}">
+                      <input ng-click="takepict($index)" type="file" id="0" ng-model="item.picture" required>
+  		              </div>
+	                </div>
+
+	              <label><input type="checkbox" ng-click="addfeats()">Add Skill ?</label><br>
+	                <div ng-repeat="item in skills">
+	                  <div class="form-group">
+		                <label>Skill * :</label>
+		                <div>
+                      <select ng-show="item.sel" class="select2_single form-control" tabindex="-1" ng-model="item.isi" ng-options="feature.title for feature in features | orderBy:'title'" ng-change="chanfeat(item.feature)">
+                      </select>
+                      <input ng-hide="item.sel" type="text" class="form-control" ng-model="item.title" ng-click="editfeat(item.feature)" required>
+                    </div>
+		              </div>
+	                </div>
+
+                  <label for="picture">Picture * :</label>
+                  <input ng-click="takepic()" type="file" id="nameImg" ng-model="profile.picture" required>
+                    
+                    <br>
+                    <span class="btn btn-primary" ng-click="createProfile(profile,infos,tests,skills)">Submit</span>
+
+                </form>
+                <!-- end form for validations -->
+
+              </div>
+            </div>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

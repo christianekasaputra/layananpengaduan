@@ -1,0 +1,33 @@
+<ion-view>
+    <ion-content class="login" overflow-scroll="false" padding="true">
+      <div class="login">
+        <div class="login_wrapper">
+          <div class="animate form login_form">
+            <section class="login_content">
+              <form ng-submit="doLogIn(user)">
+                <h1>Website Manager</h1>
+                <div>
+                  <input type="text" class="form-control" placeholder="Email" required="" ng-model="user.email"/>
+                </div>
+                <div>
+                  <input type="password" class="form-control" placeholder="Password" required="" ng-model="user.password"/>
+                </div>
+                <div>
+                  <a class="btn btn-default submit" ng-click="doLogIn(user)">Log in</a>
+                  <a class="reset_pass" href="#">Lost your password?</a>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <div class="separator">
+                  <div>
+                    <p>Authorization Required</p>
+                  </div>
+                </div>
+              </form>
+            </section>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+</ion-view>

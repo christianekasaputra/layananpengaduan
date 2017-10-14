@@ -1,0 +1,45 @@
+<ion-view>
+  <ion-content>
+    <div class="right_col" role="main">
+      <div class="">
+        <div class="page-title">
+          <div class="title_left">
+            <h3>Blog Master</h3>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="x_panel">
+              <div class="x_content">
+                <div class="row">
+                    <div class="col-md-4 col-sm-4 col-xs-12 profile_details" ng-repeat="blog in blogs | orderBy:'-datecreated'">
+                      <div class="well profile_view">
+                        <div class="col-sm-12">
+                          <h4 class="brief"><i>{{blog.title}}</i></h4>
+                          <div class="left col-xs-7">
+                            <p><strong>Tag: </strong> {{blog.kind}} </p>
+                          </div>
+                          <div class="right col-xs-5 text-center">
+                            <img src="{{blog.picture}}" alt="" class="img-circle img-responsive">
+                          </div>
+                        </div>
+                        <div class="col-xs-12 bottom text-center">
+                          <div class="col-xs-12 col-sm-6 emphasis">
+                            <button type="button" class="btn btn-primary btn-xs" ng-click="edit(blog)">
+                              <i class="fa fa-gears"> </i> Edit Blog
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

@@ -1,0 +1,47 @@
+<ion-view>
+  <ion-content>
+    <div class="right_col" role="main">
+      <!-- top tiles -->
+		<div class="tile_count">
+			<ion-refresher pulling-text="Pull to refresh" refreshing-text="Loading..." refreshing-icon="ion-loading-c" pulling-icon="ion-ios7-arrow-thin-down" on-refresh="doRefresh()">
+    		</ion-refresher>
+		    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+		      <span class="count_top"><i class="fa fa-user"></i> Pelanggan Baru</span>
+		      <div class="count">{{notify}}</div>
+		      <span class="count_bottom"><i class="green">2%</i> From last Week</span>
+		    </div>
+		    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+		      <span class="count_top"><i class="fa fa-clock-o"></i> Pencapaian Target harian</span>
+		      <div class="count">{{posting}}</div>
+		      <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>40% </i> From Yesterday</span>
+		    </div>
+		    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+		      <span class="count_top"><i class="fa fa-user"></i> Pencapaian Target Mingguan </span>
+		      <div class="count green">{{comments}}</div>
+		      <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>8% </i> From last Week</span>
+		    </div>
+		    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+		      <span class="count_top"><i class="fa fa-user"></i> Pencapaian Target Bulanan</span>
+		      <div class="count">{{reads}}</div>
+		      <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> From last Week</span>
+		    </div>
+		    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+		      <span class="count_top"><i class="fa fa-user"></i> Jumlah Article yg dishare</span>
+		      <div class="count">{{shares}}</div>
+		      <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
+		    </div>
+		    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+		      <span class="count_top"><i class="fa fa-user"></i> Total Access</span>
+		      <div class="count">{{access}}</div>
+		      <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
+		    </div>
+		</div>
+		<div id="map" data-tap-disabled="true"></div>
+      </div>
+    </div>
+	<div class="map">
+		<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d126931.03637606038!2d106.83167680000003!3d-6.184935399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sid!2sid!4v1466589937227"></iframe>
+		
+	</div>
+  </ion-content>
+</ion-view>

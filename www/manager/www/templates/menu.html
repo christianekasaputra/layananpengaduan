@@ -1,0 +1,128 @@
+<ion-side-menus enable-menu-with-back-views="false">
+  <ion-side-menu-content>
+    <ion-nav-bar>
+      <ion-nav-back-button>
+      </ion-nav-back-button>
+      <ion-nav-buttons side="left">
+        <button class="button button-icon icon ion-navicon" menu-toggle="left">
+        </button>
+      </ion-nav-buttons>
+      
+    </ion-nav-bar>
+    <ion-header-bar class="top_nav bar-stable">
+        <div class="nav_menu">
+          <nav>
+            <ul class="nav navbar-nav navbar-right">
+              <li ng-click="trigprofile()" class="{{profile}}">
+                <a class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                  <img src="{{ photo }}" alt="">{{fullname}}
+                  <span class=" fa fa-angle-down"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                  <li><a menu-close href="#/app/profile"> Profile</a></li>
+                  <li>
+                    <a href="javascript:;">
+                      <span class="badge bg-red pull-right">50%</span>
+                      <span>Settings</span>
+                    </a>
+                  </li>
+                  <li><a href="javascript:;">Help</a></li>
+                  <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                </ul>
+              </li>
+
+              <li ng-click="trigmessage()" role="presentation" class="dropdown {{message}}">
+                <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                  <i class="fa fa-envelope-o"></i>
+                  <span class="badge bg-green">{{notify}}</span>
+                </a>
+                <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+                  <li ng-hide="mail.open" ng-repeat="mail in emails | orderBy:'-datecreated'">
+                    <a>
+                      <span class="image"><img src="img/mail.png" alt="Product Image" /></span>
+                      <span>
+                        <span>{{mail.topic}}</span>
+                        <span class="time">{{ mail.datecreated | amCalendar:referenceTime:formats }}</span>
+                      </span>
+                      <span class="message">
+                        {{mail.name}}
+                      </span>
+                    </a>
+                  </li>
+                  <li>
+                    <div class="text-center">
+                      <a>
+                        <strong>See All Alerts</strong>
+                        <i class="fa fa-angle-right"></i>
+                      </a>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
+        </div>
+    </ion-header-bar>
+    <ion-nav-view name="menuContent"></ion-nav-view>
+  </ion-side-menu-content>
+
+  <ion-side-menu side="left" width="230">
+    <a menu-close ng-click="login()" class="site_title"><i class="fa fa-outdent"></i> <span>Sales Ranger</span></a>
+    <ion-content>
+      <div class="profile">
+        <div class="profile_pic">
+          <img src="{{ photo }}" alt="..." class="img-circle profile_img">
+        </div>
+        <div class="profile_info">
+          <span>Welcome,</span>
+          <h2>{{fullname}}</h2>
+        </div>
+      </div>
+      <br />
+
+
+      <!-- sidebar menu -->
+      <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+        <div class="menu_section">
+          <h3>{{level}}</h3>
+          <ul class="nav side-menu">
+            <li ng-click="trighome()" class="{{home}}"><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu" style={{homeshow}}>
+                <li><a menu-close href="#/app/dashboard/{{userid}}/{{level}}">Dashboard</a></li>
+                <li><a menu-close href="#/app/profile">Profile</a></li>
+              </ul>
+            </li>
+            <!--monitor agen tidak ada. karena tidak digunakan
+            <li ng-click="trigcont()" class="{{cont}}"><a><i class="fa fa-bar-chart-o"></i>Monitor Agen<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu" style={{contshow}}>
+                <li><a menu-close href="#/app/kontrolHarian">Kontrol Harian</a></li>
+                <li><a menu-close href="#/app/kontrolBulanan">Kontrol Bulanan</a></li>
+              </ul>
+            </li>-->
+            <li ng-click="trigsett()" class="{{sett}}"><a><i class="fa fa-desktop"></i>Penugasan<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu" style={{settshow}}>
+                <li><a menu-close href="#/app/customer">Data Pelanggan</a></li>
+                <li><a menu-close href="#/app/agen">Data Agen</a></li>
+              </ul>
+            </li>
+            <li ng-click="trigmast()" class="{{mast}}"><a><i class="fa fa-clone"></i>Laporan<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu" style={{mastshow}}>
+                <li><a menu-close href="#/app/actcustomer">Pelanggan</a></li>
+                <li><a menu-close href="#/app/actagen">Agen</a></li>
+              </ul>
+            </li>
+            <ul class="nav side-menu">
+            <li ng-click="trigadm()" class="{{adm}}"><a><i class="fa fa-edit"></i>Administrator<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu" style={{admshow}}>
+                <li><a menu-close href="#/app/registrationHome">Mengelola Pengguna</a></li>
+                <li><a menu-close href="#/app/overview">Mengelola Attribut</a></li>
+                <li><a menu-close href="#/app/tag">Mengelola Kelas</a></li>
+                <li><a menu-close href="#/app/product">Mengelola Product</a></li>
+
+              </ul>
+          </ul>
+        </div>
+      </div>
+    </ion-content>
+  </ion-side-menu>
+</ion-side-menus>

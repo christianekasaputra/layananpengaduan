@@ -1,0 +1,99 @@
+<ion-view>
+  <ion-content>
+    <div class="right_col" role="main">
+      <div class="">
+        <div class="page-title">
+          <div class="title_left">
+            <h3>Overview</h3>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+        
+        <div class="row">
+          <div class="col-md-6 col-xs-12">
+            <div class="x_panel">
+              <div class="x_title">
+                <h2>Overview <small>add New</small></h2>
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                  </li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="#">Settings 1</a>
+                      </li>
+                      <li><a href="#">Settings 2</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li><a class="close-link"><i class="fa fa-close"></i></a>
+                  </li>
+                </ul>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content">
+                <div class="profile_img">
+                  <div id="crop-avatar">
+                    <!-- Current avatar -->
+                    <img ng-show="item.photo !== undefined" class="img-responsive avatar-view" src="{{ item.photo }}">
+                  </div>
+                </div>
+                <br>
+
+                <!-- start form for validation -->
+                <form >
+                  <label>Title * :</label>
+                  <input type="text" class="form-control" ng-model="overview.title" required />
+
+                  <label for="desc">Desc * :</label>
+                  <textarea class="form-control" ng-model="overview.desc" required></textarea>
+
+                  <label><input type="checkbox" ng-click="addinfos()">Add Info ?</label><br>
+	                <div ng-repeat="item in infos">
+	                  <div class="form-group">
+		                <label>Information * :</label>
+		                <div>
+		                  <select class="select2_single form-control" tabindex="-1" ng-model="item.isi" ng-options="information.title for information in informations | orderBy:'title'">
+		                  </select>
+		                  <input type="text" class="form-control" ng-model="item.value" required/><br>
+		                </div>
+		              </div>
+	                </div>
+
+	              <label><input type="checkbox" ng-click="addtags()">Add Tag ?</label><br>
+	                <div ng-repeat="item in tags">
+	                  <div class="form-group">
+		                <label>Tag * :</label>
+		                <div>
+		                  <select class="select2_single form-control" tabindex="-1" ng-model="item.isi" ng-options="tage.title for tage in tages | orderBy:'title'">
+		                  </select>
+		                </div>
+		              </div>
+	                </div>
+
+	              <label><input type="checkbox" ng-click="addfeats()">Add Feature ?</label><br>
+	                <div ng-repeat="item in feats">
+	                  <div class="form-group">
+		                <label>Feature * :</label>
+		                <div>
+		                  <select class="select2_single form-control" tabindex="-1" ng-model="item.isi" ng-options="feature.title for feature in features | orderBy:'title'">
+		                  </select>
+		                </div>
+		              </div>
+	                </div>
+
+                  <label for="picture">Picture * :</label>
+                  <input ng-click="takepic()" type="file" id="nameImg" ng-model="overview.picture" required>
+                    
+                    <br>
+                    <span class="btn btn-primary" ng-click="createOverview(overview,infos,tags,feats)">Submit</span>
+
+                </form>
+                <!-- end form for validations -->
+
+              </div>
+            </div>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>
