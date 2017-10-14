@@ -48,8 +48,8 @@
                   <label for="email">Email * :</label>
                   <input type="email" class="form-control" ng-model="user.email" required />
 
-                  <label for="email">Password * :</label>
-                  <input type="password" class="form-control" ng-model="user.password" required />
+                  <label for="email" ng-if="!hide">Password * :</label>
+                  <input type="password" class="form-control" ng-model="user.password" ng-if="!hide" required />
 
                   <label for="email">Picture * :</label>
                   <input ng-click="takepic()" type="file" id="nameImg" ng-model="user.picture" required />
@@ -83,21 +83,21 @@
                       <input type="checkbox" name="hobbies[]" id="hobby1" value="ski" data-parsley-mincheck="2" required class="flat" style="position: absolute; opacity: 0;" ng-model="user.level"/> 
                       <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);" ng-click="trigagen()"></ins>
                     </div>
-                    agen Penjualan
+                    Masyarakat
                     <br>
 
                     <div class="icheckbox_flat-green {{headsales}}" style="position: relative;">
                       <input type="checkbox" name="hobbies[]" id="hobby1" value="ski" data-parsley-mincheck="2" required class="flat" style="position: absolute; opacity: 0;" ng-model="user.level"/> 
                       <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);" ng-click="trigheadsales()"></ins>
                     </div>
-                    Kepala penjualan
+                    Pejabat
                     <br>
 
                     <div class="icheckbox_flat-green {{manager}}" style="position: relative;">
                       <input type="checkbox" name="hobbies[]" id="hobby1" value="ski" data-parsley-mincheck="2" required class="flat" style="position: absolute; opacity: 0;" ng-model="user.level"/> 
                       <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);" ng-click="trigmanager()"></ins>
                     </div>
-                    Manajer
+                    Kepala Daerah
                     
                     <br>
                     <span class="btn btn-primary" ng-click="createMember(user)">Submit</span>

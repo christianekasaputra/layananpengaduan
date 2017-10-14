@@ -310,37 +310,45 @@ angular.module('starter.controllers', [])
     $scope.agen = "checked";
     $scope.headsales = "";
     $scope.manager = "";
-    $scope.level = "Agen";
+    $scope.level = "Masyarakat";
   };
   $scope.trigheadsales = function() {
     $scope.admin = "";
     $scope.agen = "";
     $scope.headsales = "checked";
     $scope.manager = "";
-    $scope.level = "Kepala Penjualan";
+    $scope.level = "Pejabat";
   };
   $scope.trigmanager = function() {
     $scope.admin = "";
     $scope.agen = "";
     $scope.headsales = "";
     $scope.manager = "checked";
-    $scope.level = "Manajer";
+    $scope.level = "Kepala Daerah";
   };
 
   if ($stateParams.userId === '') {
-      //
-      // Create user
-      //
       $scope.item = {'photo': '', 'picture':''};
   } else {
-      //
-      // Edit Product
-      //
-
+      $scope.hide = true;
       var getUser = MembersFactory.getUser($stateParams.userId);
       $scope.inEditMode = true;
       $scope.user = getUser;
       $scope.item = {'photo': $scope.user.picture};
+      if ($scope.user.gender = "male") {
+        $scope.trigmale();
+      } else {
+        $scope.trigfemale();
+      }
+      if ($scope.user.level = "Admin") {
+        $scope.trigadmin();
+      } else if ($scope.user.level = "Masyarakat") {
+        $scope.trigagen();
+      } else if ($scope.user.level = "Pejabat") {
+        $scope.trigheadsales();
+      } else if ($scope.user.level = "Kepala Daerah") {
+        $scope.trigmanager();
+      }
   }
 
   $scope.takepic = function() {

@@ -68,6 +68,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
     templateUrl: 'templates/menu.html',
     controller: 'AppCtrl'
   })
+
   .state('app.registrationHome', {
     url: '/registrationHome',
     views: {
