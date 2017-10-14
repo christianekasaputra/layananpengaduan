@@ -67,7 +67,7 @@
   </ion-side-menu-content>
 
   <ion-side-menu side="left" width="230">
-    <a menu-close ng-click="login()" class="site_title"><i class="fa fa-outdent"></i> <span>Sales Ranger</span></a>
+    <a menu-close ng-click="login()" class="site_title"><i class="fa fa-outdent"></i> <span>LPM</span></a>
     <ion-content>
       <div class="profile">
         <div class="profile_pic">
@@ -92,32 +92,25 @@
                 <li><a menu-close href="#/app/profile">Profile</a></li>
               </ul>
             </li>
-            <!--monitor agen tidak ada. karena tidak digunakan
-            <li ng-click="trigcont()" class="{{cont}}"><a><i class="fa fa-bar-chart-o"></i>Monitor Agen<span class="fa fa-chevron-down"></span></a>
-              <ul class="nav child_menu" style={{contshow}}>
-                <li><a menu-close href="#/app/kontrolHarian">Kontrol Harian</a></li>
-                <li><a menu-close href="#/app/kontrolBulanan">Kontrol Bulanan</a></li>
-              </ul>
-            </li>-->
-            <li ng-click="trigsett()" class="{{sett}}"><a><i class="fa fa-desktop"></i>Penugasan<span class="fa fa-chevron-down"></span></a>
+            <li ng-click="trigsett()" class="{{sett}}"><a><i class="fa fa-desktop"></i>Pengaduan<span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style={{settshow}}>
-                <li><a menu-close href="#/app/customer">Data Pelanggan</a></li>
-                <li><a menu-close href="#/app/agen">Data Agen</a></li>
+                <li><a menu-close href="#/app/customer">Daftar Pengaduan</a></li>
+                <li><a menu-close href="#/app/agen">Penyelesain Pengaduan</a></li>
               </ul>
             </li>
-            <li ng-click="trigmast()" class="{{mast}}"><a><i class="fa fa-clone"></i>Laporan<span class="fa fa-chevron-down"></span></a>
+            <li ng-click="trigmast()" class="{{mast}}"><a><i class="fa fa-clone"></i>Tanggapan<span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style={{mastshow}}>
-                <li><a menu-close href="#/app/actcustomer">Pelanggan</a></li>
-                <li><a menu-close href="#/app/actagen">Agen</a></li>
+                <li><a menu-close href="#/app/actcustomer">Tanggapi Pengaduan</a></li>
+                <li><a menu-close href="#/app/actagen">Daftar Tanggapan</a></li>
               </ul>
             </li>
             <ul class="nav side-menu">
             <li ng-click="trigadm()" class="{{adm}}"><a><i class="fa fa-edit"></i>Administrator<span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style={{admshow}}>
                 <li><a menu-close href="#/app/registrationHome">Mengelola Pengguna</a></li>
-                <li><a menu-close href="#/app/overview">Mengelola Attribut</a></li>
-                <li><a menu-close href="#/app/tag">Mengelola Kelas</a></li>
-                <li><a menu-close href="#/app/product">Mengelola Product</a></li>
+                <li><a menu-close href="#/app/overview">Dashboard Pejabat</a></li>
+                <li><a menu-close href="#/app/tag">Masalah</a></li>
+                <li><a menu-close href="#/app/product">Program & Anggaran</a></li>
 
               </ul>
           </ul>
