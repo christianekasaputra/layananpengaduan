@@ -307,22 +307,22 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
 	 }
   })
 
-.state('app.customer', {
-    url: '/customer',
+.state('app.pengaduan', {
+    url: '/pengaduan',
     views: {
       'menuContent': {
-        templateUrl: 'templates/customer.html',
-        controller: 'customerCtrl'
+        templateUrl: 'templates/pengaduan.html',
+        controller: 'pengaduanCtrl'
       }
     }
   })
 
-.state('app.addcustomer', {
-    url: '/addcustomer/:customerId',
+.state('app.addpengaduan', {
+    url: '/addpengaduan/:pengaduanId',
     views: {
       'menuContent': {
-        templateUrl: 'templates/addcustomer.html',
-        controller: 'addcustomerCtrl'
+        templateUrl: 'templates/addpengaduan.html',
+        controller: 'addpengaduanCtrl'
       }
     }
   })

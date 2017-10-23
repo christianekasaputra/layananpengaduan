@@ -39,10 +39,14 @@ angular.module('starter.controllers', [])
       $scope.isPublic = true;
     } else if ($scope.level === "Admin") {
       $scope.isAdmin = true;
+      $scope.isPublic = true;
+      $scope.isPejabat = true;
     } else if ($scope.level === "Pejabat") {
       $scope.isPejabat = true;
     } else if ($scope.level === "Kepala Daerah") {
       $scope.isAdmin = true;
+      $scope.isPublic = true;
+      $scope.isPejabat = true;
     }
   });
 
@@ -2705,18 +2709,138 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('profileCtrl', function($scope, $state, $ionicLoading, ContactsFactory, CurrentUserService, PickTransactionServices, $ionicPopup, myCache) {
+.controller('profileCtrl', function($scope, $state, $ionicLoading, $ionicHistory, ContactsFactory, MembersFactory, CurrentUserService, PickTransactionServices, $ionicPopup, myCache) {
 
-  $scope.profile = {};
-  $scope.profile = ContactsFactory.getProfile();
-  $scope.profile.$loaded().then(function (x) {
-    refresh($scope.profile, $scope, ContactsFactory);
-  }).catch(function (error) {
-      console.error("Error:", error);
+  $scope.$on('$ionicView.beforeEnter', function () {
+    $scope.userid = myCache.get('thisMemberId');
+    ContactsFactory.getUser($scope.userid).then(function(snap) {
+      $scope.user = snap;
+      $scope.item = {'photo': $scope.user.picture};
+      if ($scope.user.gender === "female") {
+        $scope.trigfemale();
+      } else if ($scope.user.gender === "male") {
+        $scope.trigmale();
+      }
+    })    
   });
+  
+  // Gender
+  $scope.trigmale = function() {
+    $scope.male = "checked";
+    $scope.female = "";
+    $scope.gender = "male";
+  };
+  $scope.trigfemale = function() {
+    $scope.male = "";
+    $scope.female = "checked";
+    $scope.gender = "female";
+  };
 
-  function refresh(profile, $scope, ContactsFactory) {
-  }
+  $scope.takepic = function() {
+    
+    var filesSelected = document.getElementById("nameImg").files;
+    if (filesSelected.length > 0) {
+      var fileToLoad = filesSelected[0];
+      var fileReader = new FileReader();
+      fileReader.onload = function(fileLoadedEvent) {
+        var textAreaFileContents = document.getElementById(
+          "textAreaFileContents"
+        );
+        $scope.item = {
+          photo: fileLoadedEvent.target.result
+        };
+        PickTransactionServices.updatePhoto($scope.item.photo);
+        $ionicPopup.alert({title: 'Upload Success', template: 'Upload from camera success'});
+        $scope.uploaded();
+      };
+      fileReader.readAsDataURL(fileToLoad);
+    }
+  };
+
+  $scope.uploaded = function () {
+    $scope.item = { photo: PickTransactionServices.photoSelected };
+  };
+
+  $scope.createMember = function (user) {
+      var email = user.email;
+      var password = user.password;
+      var filesSelected = document.getElementById("nameImg").files;
+      if (filesSelected.length > 0) {
+        var fileToLoad = filesSelected[0];
+        var fileReader = new FileReader();
+        fileReader.onload = function(fileLoadedEvent) {
+          var textAreaFileContents = document.getElementById(
+            "textAreaFileContents"
+          );
+          $scope.item = {
+            photo: fileLoadedEvent.target.result
+          };
+          PickTransactionServices.updatePhoto($scope.item.photo);
+        };
+
+        fileReader.readAsDataURL(fileToLoad);
+      }
+
+      // Validate form data
+      if (typeof user.nik === 'undefined' || user.nik === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'NIK belum diisi'});
+          return;
+      }
+
+      if (typeof user.fullname === 'undefined' || user.fullname === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Nama Lengkap belum diisi'});
+          return;
+      }
+      if (typeof user.email === 'undefined' || user.email === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Format email belum benar, contoh yang benar abc@abc.com!'});
+          return;
+      }
+      if (typeof user.password === 'undefined' || user.password === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Password belum diisi'});
+          return;
+      }
+
+      if (typeof $scope.item.photo === 'undefined' || $scope.item.photo === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Foto belum diisi'});
+          return;
+      }
+
+      $ionicLoading.show({
+          template: '<ion-spinner icon="ios"></ion-spinner><br>Editing...'
+      });
+      var photo = $scope.item.photo;
+      var gender = $scope.gender;
+      var level = $scope.level;
+
+      $scope.temp = {
+          nik: user.nik,
+          fullname: user.fullname,
+          picture: photo,
+          email: user.email,
+          password: user.password,
+          gender: gender,
+          level: level,
+          datecreated: Date.now(),
+          dateupdated: Date.now()
+      }
+
+      var membersref = MembersFactory.ref();
+      var newUser = membersref.child($scope.userid);
+      newUser.update($scope.temp, function (ref) {
+      });
+      $ionicLoading.hide();
+      $ionicPopup.alert({title: 'Update Success', template: 'Update Profile Success'});
+      $ionicHistory.nextViewOptions({
+          disableAnimate: true,
+          disableBack: true
+      });
+      $state.go('app.dashboard', { memberId: $scope.userid, level: level });
+  };
 })
 
 .controller('detprofileCtrl', function($scope, $state, $stateParams, $ionicLoading, $ionicHistory, ContactsFactory, MasterFactory, CurrentUserService, PickTransactionServices, $ionicPopup, myCache) {
@@ -3154,7 +3278,7 @@ angular.module('starter.controllers', [])
     }
 })
 
-.controller('customerCtrl', function($scope, $state, $ionicLoading, CustomerFactory, $ionicPopup, myCache) {
+.controller('pengaduanCtrl', function($scope, $state, $ionicLoading, CustomerFactory, $ionicPopup, myCache) {
 
   $scope.customers = [];
 
@@ -3186,9 +3310,130 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('addcustomerCtrl', function($scope, $ionicLoading, CustomerFactory, $stateParams, CurrentUserService, $ionicPopup, myCache, $ionicHistory) {
+.controller('addpengaduanCtrl', function($scope, $ionicLoading, CustomerFactory, $cordovaGeolocation, $stateParams, CurrentUserService, $ionicPopup, myCache, $ionicHistory) {
 
   $scope.customer = {'name': '','address': '' ,'email': '' ,'phone': '' ,'gender': ''};
+  $scope.photo = CurrentUserService.picture;
+  $scope.fullname = CurrentUserService.fullname;
+  var options = {timeout: 10000, enableHighAccuracy: true};
+ 
+  $cordovaGeolocation.getCurrentPosition(options).then(function(position){
+ 
+    var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    var infowindow = new google.maps.InfoWindow();
+    
+ 
+    var mapOptions = {
+      center: latLng,
+      zoom: 17,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+    var input = document.getElementById('cari');
+    var searchBox = new google.maps.places.SearchBox(input);
+    $scope.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    $scope.map.addListener('bounds_changed', function() {
+      searchBox.setBounds($scope.map.getBounds());
+    });
+
+    var markers = [];
+    // Listen for the event fired when the user selects a prediction and retrieve
+    // more details for that place.
+    searchBox.addListener('places_changed', function() {
+      var places = searchBox.getPlaces();
+
+      if (places.length == 0) {
+        return;
+      }
+
+      // Clear out the old markers.
+      markers.forEach(function(marker) {
+        marker.setMap(null);
+      });
+      markers = [];
+
+      // For each place, get the icon, name and location.
+      var bounds = new google.maps.LatLngBounds();
+      places.forEach(function(place) {
+        if (!place.geometry) {
+          console.log("Returned place contains no geometry");
+          return;
+        }
+        var icon = {
+          url: place.icon,
+          size: new google.maps.Size(71, 71),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(17, 34),
+          scaledSize: new google.maps.Size(25, 25)
+        };
+        // Create a marker for each place.
+        var markers = new google.maps.Marker({
+          map: $scope.map,
+          icon: icon,
+          title: place.name,
+          animation: google.maps.Animation.DROP,
+          position: place.geometry.location
+        });
+
+        google.maps.event.addListener(markers, 'click', function() {
+          $scope.propose.locationPropose = place.name;
+          $scope.propose.latPropose = place.geometry.location.lat();
+          $scope.propose.lngPropose = place.geometry.location.lng();
+          $scope.isLocation = true;
+          infowindow.setContent('<div ng-click="set()"><strong>' + place.name + '</strong><br>'+
+              place.formatted_address + '</div>');
+          infowindow.open($scope.map, markers);
+        });
+
+        $scope.set = function () {
+          $scope.propose.location = place.name;
+          $scope.isLocation = true;
+        };
+
+        if (place.geometry.viewport) {
+          // Only geocodes have viewport.
+          bounds.union(place.geometry.viewport);
+        } else {
+          bounds.extend(place.geometry.location);
+        }
+        
+      });
+      $scope.map.fitBounds(bounds);
+    });
+
+    google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+
+      var image = {
+        url: $scope.photo,
+        // This marker is 20 pixels wide by 32 pixels high.
+        size: new google.maps.Size(25, 25),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(25, 25)
+      };
+
+      var marker = new google.maps.Marker({
+          map: $scope.map,
+          animation: google.maps.Animation.DROP,
+          position: latLng,
+          icon: image
+      });      
+     
+      var infoWindow = new google.maps.InfoWindow({
+          content: $scope.fullname
+      });
+     
+      google.maps.event.addListener(marker, 'click', function () {
+          infoWindow.open($scope.map, marker);
+      });
+    });
+  }, function(error){
+    console.log("Could not get location");
+  });
+
   // Gender
   $scope.male = "";
   $scope.female = "";
@@ -3202,19 +3447,6 @@ angular.module('starter.controllers', [])
     $scope.female = "checked";
     $scope.gender = "Wanita";
   };
-  if ($stateParams.customerId === '') {
-  } else {
-      var getcust = CustomerFactory.getCustomer($stateParams.customerId);
-      $scope.inEditMode = true;
-      $scope.customer = getcust;
-      if ($scope.customer.gender !== "") {
-        if ($scope.customer.gender == "male") {
-          $scope.trigmale;
-        } else {
-          $scope.trigfemale;
-        }
-      }
-  }
 
   $scope.createCustomer = function (customer) {
 

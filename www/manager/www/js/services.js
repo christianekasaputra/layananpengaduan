@@ -398,7 +398,7 @@ angular.module('starter.services', [])
 
 .factory('ContactsFactory', function ($firebaseArray, $q, myCache, MembersFactory, CurrentUserService) {
         var fb = firebase.database().ref();
-        var ref = {};
+        var ref = fb.child("users");
         var contactsRef = {};
         var profileRef = {};
         var eRef = fb.child("profile");
@@ -429,8 +429,12 @@ angular.module('starter.services', [])
                 return thisEmployee;
             },
             getUser: function (userId) {
-                var thisUser = fb.child("users").child(userId);;
-                return thisUser;
+                var deferred = $q.defer();
+                var memberRef = ref.child(userId);
+                memberRef.once("value", function (snap) {
+                    deferred.resolve(snap.val());
+                });
+                return deferred.promise;
             },
             
         };

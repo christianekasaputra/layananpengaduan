@@ -700,15 +700,35 @@ span.right {
 .img-user {
     height: 33px;
 }
-.map {
-    position: relative;
-}
-.map iframe {
+#map {
     width: 100%;
-    min-height: 969px;
-    border: none;
+    height: 100%;
 }
-iframe {
+
+#cari {
+    z-index: 0;
+    position: absolute;
+    left: 112px;
+    top: 10px;
     display: block;
-    max-width: 100%;
+    -webkit-flex: 1 1 auto;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    -webkit-order: 2;
+    -ms-flex-order: 2;
+    order: 2;
+    display: block;
+    /* background: none; */
+    padding-top: 2px;
+    padding-bottom: 1px;
+    padding-left: 2px;
+    padding-right: 2px;
+    border-width: 0 0 1px 0;
+    line-height: 26px;
+    -ms-flex-preferred-size: 26px;
+    border-radius: 0;
+    border-bottom-color: white;
+    /* color: white; */
+    border-color: rgba(0,0,0,0.12);
+    width: 100%;
 }
