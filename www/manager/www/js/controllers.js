@@ -34,6 +34,20 @@ angular.module('starter.controllers', [])
   $scope.level = CurrentUserService.level;
   $scope.userid = myCache.get('thisMemberId');
 
+  $scope.$on('$ionicView.beforeEnter', function () {
+    if ($scope.level === "Masyarakat") {
+      $scope.isPublic = true;
+    } else if ($scope.level === "Admin") {
+      $scope.isAdmin = true;
+    } else if ($scope.level === "Pejabat") {
+      $scope.isPejabat = true;
+    } else if ($scope.level === "Kepala Daerah") {
+      $scope.isAdmin = true;
+    }
+  });
+
+  
+
   $scope.message = "";
   $scope.trigmessage = function() {
     if ($scope.message === "") {
@@ -532,6 +546,259 @@ angular.module('starter.controllers', [])
   };
 })
 
+.controller('daftarCtrl', function($scope, $state, $ionicLoading, MembersFactory, CurrentUserService, PickTransactionServices, $ionicPopup, myCache, $stateParams, $ionicHistory) {
+
+  $scope.$on('$ionicView.beforeEnter', function () {
+    if ($scope.user.picture === ""){
+       $scope.item.photo = PickTransactionServices.photoSelected;
+    } else {
+      $scope.item = {'photo': $scope.user.picture};
+    }
+  });
+
+  $scope.user = {'fullname': '','email': '','picture': '','gender': ''};
+  $scope.item = {'photo': '', 'picture':''};
+  $scope.male = "";
+  $scope.female = "";
+  $scope.admin = "";
+  $scope.agen = "";
+  $scope.headsales = "";
+  $scope.manager = "";
+
+  // Gender
+  $scope.trigmale = function() {
+    $scope.male = "checked";
+    $scope.female = "";
+    $scope.gender = "male";
+  };
+  $scope.trigfemale = function() {
+    $scope.male = "";
+    $scope.female = "checked";
+    $scope.gender = "female";
+  };
+
+  // User Level
+  
+  $scope.trigadmin = function() {
+    $scope.admin = "checked";
+    $scope.agen = "";
+    $scope.headsales = "";
+    $scope.manager = "";
+    $scope.level = "Admin";
+  };
+  $scope.trigagen = function() {
+    $scope.admin = "";
+    $scope.agen = "checked";
+    $scope.headsales = "";
+    $scope.manager = "";
+    $scope.level = "Masyarakat";
+  };
+  $scope.trigheadsales = function() {
+    $scope.admin = "";
+    $scope.agen = "";
+    $scope.headsales = "checked";
+    $scope.manager = "";
+    $scope.level = "Pejabat";
+  };
+  $scope.trigmanager = function() {
+    $scope.admin = "";
+    $scope.agen = "";
+    $scope.headsales = "";
+    $scope.manager = "checked";
+    $scope.level = "Kepala Daerah";
+  };
+
+  $scope.takepic = function() {
+    
+    var filesSelected = document.getElementById("nameImg").files;
+    if (filesSelected.length > 0) {
+      var fileToLoad = filesSelected[0];
+      var fileReader = new FileReader();
+      fileReader.onload = function(fileLoadedEvent) {
+        var textAreaFileContents = document.getElementById(
+          "textAreaFileContents"
+        );
+        $scope.item = {
+          photo: fileLoadedEvent.target.result
+        };
+        PickTransactionServices.updatePhoto($scope.item.photo);
+        $ionicPopup.alert({title: 'Upload Success', template: 'Upload from camera success'});
+        $scope.uploaded();
+      };
+      fileReader.readAsDataURL(fileToLoad);
+    }
+  };
+
+  $scope.uploaded = function () {
+    $scope.item = { photo: PickTransactionServices.photoSelected };
+  };
+
+  $scope.createMember = function (user) {
+      var email = user.email;
+      var password = user.password;
+      var filesSelected = document.getElementById("nameImg").files;
+      if (filesSelected.length > 0) {
+        var fileToLoad = filesSelected[0];
+        var fileReader = new FileReader();
+        fileReader.onload = function(fileLoadedEvent) {
+          var textAreaFileContents = document.getElementById(
+            "textAreaFileContents"
+          );
+          $scope.item = {
+            photo: fileLoadedEvent.target.result
+          };
+          PickTransactionServices.updatePhoto($scope.item.photo);
+        };
+
+        fileReader.readAsDataURL(fileToLoad);
+      }
+
+      // Validate form data
+      if (typeof user.nik === 'undefined' || user.nik === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'NIK belum diisi'});
+          return;
+      }
+
+      if (typeof user.fullname === 'undefined' || user.fullname === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Nama Lengkap belum diisi'});
+          return;
+      }
+      if (typeof user.email === 'undefined' || user.email === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Format email belum benar, contoh yang benar abc@abc.com!'});
+          return;
+      }
+      if (typeof user.password === 'undefined' || user.password === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Password belum diisi'});
+          return;
+      }
+
+      if (typeof $scope.item.photo === 'undefined' || $scope.item.photo === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Foto belum diisi'});
+          return;
+      }
+
+      if ($scope.inEditMode) {
+        $ionicLoading.show({
+            template: '<ion-spinner icon="ios"></ion-spinner><br>Editing...'
+        });
+        var photo = $scope.item.photo;
+        var gender = $scope.gender;
+        var level = 'Masyarakat';
+
+        $scope.temp = {
+            nik: user.nik,
+            fullname: user.fullname,
+            picture: photo,
+            email: user.email,
+            password: user.password,
+            gender: gender,
+            level: level,
+            datecreated: Date.now(),
+            dateupdated: Date.now()
+        }
+
+        var membersref = MembersFactory.ref();
+        var newUser = membersref.child($stateParams.userId);
+        newUser.update($scope.temp, function (ref) {
+        });
+        $ionicLoading.hide();
+        $ionicHistory.goBack();
+
+      }else {
+      //PREPARE FOR DATABASE
+        $ionicLoading.show({
+            template: '<ion-spinner icon="ios"></ion-spinner><br>Registering...'
+        });
+      firebase.auth().createUserWithEmailAndPassword(user.email,user.password).catch(function(error) {
+        switch (error.code) {
+            case "auth/email-already-in-use":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Register Failed', template: 'The email entered is already in use!'});
+                break;
+            case "auth/invalid-email":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Register Failed', template: 'The specified email is not a valid email!'});
+                break;
+            case "auth/operation-not-allowed":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Register Failed', template: 'The accounts are not enabled!'});
+                break;
+            case "auth/weak-password":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Register Failed', template: 'The password not strong enough!'});
+                break;
+            default:
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Register Failed', template: 'Oops. Something went wrong!'});
+        }
+      }).then(function(firebaseUser) {
+        $ionicLoading.hide();
+        firebase.auth().signInWithEmailAndPassword(user.email,user.password).catch(function(error) {
+          switch (error.code) {
+              case "auth/user-disabled":
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({title: 'Register Failed', template: 'The email has been disable!'});
+                  break;
+              case "auth/invalid-email":
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({title: 'Register Failed', template: 'The specified email is not a valid email!'});
+                  break;
+              case "auth/user-not-found":
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({title: 'Register Failed', template: 'The email not found!'});
+                  break;
+              case "auth/wrong-password":
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({title: 'Register Failed', template: 'The password invalid!'});
+                  break;
+              default:
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({title: 'Register Failed', template: 'Oops. Something went wrong!'});
+          }
+        }).then(function(firebaseUser) {
+          /* PREPARE DATA FOR FIREBASE*/
+          var photo = $scope.item.photo;
+          var gender = $scope.gender;
+          var level = 'Masyarakat';
+
+          $scope.temp = {
+              nik: user.nik,
+              fullname: user.fullname,
+              picture: photo,
+              email: user.email,
+              password: user.password,
+              gender: gender,
+              level: level,
+              datecreated: Date.now(),
+              dateupdated: Date.now()
+          }
+
+          /* SAVE MEMBER DATA */
+          var membersref = MembersFactory.ref();
+          var newUser = membersref.child(firebaseUser.uid);
+          newUser.update($scope.temp, function (ref) {
+          addImage = newUser.child("images");
+          });
+          MembersFactory.getMember(firebaseUser).then(function (thisuser) {
+            /* Save user data for later use */
+            myCache.put('thisUserName', thisuser.fullname);
+            myCache.put('thisUserLevel', thisuser.level);
+            myCache.put('thisMemberId', firebaseUser.uid);
+            CurrentUserService.updateUser(thisuser);
+            $ionicLoading.hide();
+            $state.go('app.dashboard', { memberId: firebaseUser.uid, level: thisuser.level });
+          });
+        });
+      });
+    }
+  };
+})
+
 .controller("userCtrl", function($scope, $state, $rootScope, MembersFactory, $ionicLoading, $ionicPopup) {
   $scope.users = [];
   $scope.users = MembersFactory.getUsers();
@@ -542,10 +809,6 @@ angular.module('starter.controllers', [])
   });
 
   $scope.edit = function(item) {
-    $state.go('app.registration', { userId: item.$id });
-  };
-
-  $scope.assign = function(item) {
     $state.go('app.registration', { userId: item.$id });
   };
 

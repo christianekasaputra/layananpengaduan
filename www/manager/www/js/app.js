@@ -62,6 +62,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
     controller: 'loginCtrl'
   })
 
+  .state('daftar', {
+    url: '/daftar',
+    cache: false,
+    templateUrl: 'templates/daftar.html',
+    controller: 'daftarCtrl'
+  })
+
   .state('app', {
     url: '/app',
     abstract: true,
@@ -88,6 +95,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
       }
     }
   })
+
 
   .state('app.product', {
     url: '/product',

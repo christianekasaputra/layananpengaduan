@@ -1,0 +1,86 @@
+  <ion-view>
+  <ion-content>
+    <div class="right_col" role="main">
+      <div class="">
+        <div class="page-title">
+          <div class="title_left">
+            <h3>Registration</h3>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+        
+        <div class="row">
+          <div class="col-md-6 col-xs-12">
+            <div class="x_panel">
+              <div class="x_title">
+                <h2>Registration Form <small>Click to validate</small></h2>
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                  </li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="#">Settings 1</a>
+                      </li>
+                      <li><a href="#">Settings 2</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li><a class="close-link"><i class="fa fa-close"></i></a>
+                  </li>
+                </ul>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content">
+                <div class="profile_img">
+                  <div id="crop-avatar">
+                    <!-- Current avatar -->
+                    <img ng-show="item.photo !== undefined" class="img-responsive avatar-view" src="{{ item.photo }}">
+                  </div>
+                </div>
+                <br>
+
+                <!-- start form for validation -->
+                <form >
+                  <label>NIK * :</label>
+                  <input type="text" class="form-control" ng-model="user.nik" required />
+
+                  <label>Nama Lengkap * :</label>
+                  <input type="text" class="form-control" ng-model="user.fullname" required />
+
+                  <label for="email">Email * :</label>
+                  <input type="email" class="form-control" ng-model="user.email" required />
+
+                  <label for="email" ng-if="!hide">Password * :</label>
+                  <input type="password" class="form-control" ng-model="user.password" ng-if="!hide" required />
+
+                  <label for="email">Picture * :</label>
+                  <input ng-click="takepic()" type="file" id="nameImg" ng-model="user.picture" required />
+
+                  <label>Gender *:</label>
+                  <br>
+                    M:
+                    <div class="iradio_flat-green {{male}}" style="position: relative;">
+                      <input type="radio" class="flat" name="gender" id="genderM" value="M"  required style="position: absolute;opacity: 0;" ng-model="user.gender">
+                      <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);" ng-click="trigmale()">
+                      </ins>
+                    </div> 
+                    F:
+                    <div class="iradio_flat-green {{female}}" style="position: relative;">
+                      <input class="iradio_flat-green" type="radio" class="flat" name="gender" id="genderF" value="F" style="position: absolute;opacity: 0;" ng-model="user.gender"/>
+                      <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);" ng-click="trigfemale()">
+                      </ins>
+                    </div>
+
+                  <br><br>
+                  <span class="btn btn-primary" ng-click="createMember(user)">Daftar</span>
+
+                </form>
+                <!-- end form for validations -->
+
+              </div>
+            </div>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

@@ -1,0 +1,76 @@
+<ion-view>
+  <ion-content>
+    <div class="right_col" role="main">
+      <div class="">
+        <div class="page-title">
+          <div class="title_left">
+            <h3>Akses Kontrol</h3>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="row">
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Daftar Menu <small>Akses</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+
+                    <table id="datatable" class="table table-striped table-bordered orderBy:'fullname'">
+                      <thead>
+                        <tr>
+                          <th>Menu</th>
+                          <th>Masyarakat</th>
+                          <th>Pejabat</th>
+                          <th>Kepala Daerah</th>
+                        </tr>
+                      </thead>
+
+
+                      <tbody>
+                      <tr>
+                        <td>Dashboard</td>
+                        <td><div class="iradio_flat-green {{full}}" style="position: relative;">
+                          <input type="radio" class="flat" name="gender" id="genderM" value="M"  required style="position: absolute;opacity: 0;" ng-model="user.gender">
+                          <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);" ng-click="trigfull()">
+                          </ins>
+                        </div></td>
+                        <td><div class="iradio_flat-green {{male}}" style="position: relative;">
+                          <input type="radio" class="flat" name="gender" id="genderM" value="M"  required style="position: absolute;opacity: 0;" ng-model="user.gender">
+                          <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);" ng-click="trigmale()">
+                          </ins>
+                        </div></td>
+                        <td><div class="iradio_flat-green {{male}}" style="position: relative;">
+                          <input type="radio" class="flat" name="gender" id="genderM" value="M"  required style="position: absolute;opacity: 0;" ng-model="user.gender">
+                          <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);" ng-click="trigmale()">
+                          </ins>
+                        </div></td>
+                      </tr>
+                      </tbody>
+                    </table>
+                    <a href="#/app/registration/" class="btn btn-success"><i class="fa fa-plus-square m-right-xs"></i> add user</a>
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+    </div>
+  </ion-content>
+</ion-view>
