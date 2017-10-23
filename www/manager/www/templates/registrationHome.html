@@ -42,6 +42,7 @@
                           <th>Picture</th>
                           <th>User Level</th>
                           <th>Edit</th>
+                          <th>Assign</th>
                           <th>Delete</th>
                         </tr>
                       </thead>
@@ -56,6 +57,9 @@
                         <td>{{user.level}}</td>
                         <td><button type="button" class="btn btn-primary btn-xs" ng-click="edit(user)">
                               <i class="fa fa-gears"> </i> Edit User
+                            </button></td>
+                        <td><button type="button" class="btn btn-primary btn-xs" ng-click="assign(user)">
+                              <i class="fa fa-gears"> </i> Assign User
                             </button></td>
                         <td><button type="button" class="btn btn-primary btn-xs" ng-click="delete(user)">
                               <i class="fa fa-gears"> </i> Delete User

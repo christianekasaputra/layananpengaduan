@@ -267,10 +267,6 @@ angular.module('starter.controllers', [])
 
 .controller('registrationCtrl', function($scope, $state, $ionicLoading, MembersFactory, CurrentUserService, PickTransactionServices, $ionicPopup, myCache, $stateParams, $ionicHistory) {
 
-  $scope.user = {'fullname': '','email': '','picture': '','gender': ''};
-  $scope.item = {'photo': ''};
-
-
   $scope.$on('$ionicView.beforeEnter', function () {
     if ($scope.user.picture === ""){
        $scope.item.photo = PickTransactionServices.photoSelected;
@@ -280,8 +276,6 @@ angular.module('starter.controllers', [])
   });
 
   // Gender
-  $scope.male = "";
-  $scope.female = "";
   $scope.trigmale = function() {
     $scope.male = "checked";
     $scope.female = "";
@@ -294,10 +288,7 @@ angular.module('starter.controllers', [])
   };
 
   // User Level
-  $scope.admin = "";
-  $scope.agen = "";
-  $scope.headsales = "";
-  $scope.manager = "";
+  
   $scope.trigadmin = function() {
     $scope.admin = "checked";
     $scope.agen = "";
@@ -328,25 +319,32 @@ angular.module('starter.controllers', [])
   };
 
   if ($stateParams.userId === '') {
+      $scope.user = {'fullname': '','email': '','picture': '','gender': ''};
       $scope.item = {'photo': '', 'picture':''};
+      $scope.male = "";
+      $scope.female = "";
+      $scope.admin = "";
+      $scope.agen = "";
+      $scope.headsales = "";
+      $scope.manager = "";
   } else {
       $scope.hide = true;
       var getUser = MembersFactory.getUser($stateParams.userId);
       $scope.inEditMode = true;
       $scope.user = getUser;
       $scope.item = {'photo': $scope.user.picture};
-      if ($scope.user.gender = "male") {
-        $scope.trigmale();
-      } else {
+      if ($scope.user.gender === "female") {
         $scope.trigfemale();
+      } else if ($scope.user.gender === "male") {
+        $scope.trigmale();
       }
-      if ($scope.user.level = "Admin") {
+      if ($scope.user.level === "Admin") {
         $scope.trigadmin();
-      } else if ($scope.user.level = "Masyarakat") {
+      } else if ($scope.user.level === "Masyarakat") {
         $scope.trigagen();
-      } else if ($scope.user.level = "Pejabat") {
+      } else if ($scope.user.level === "Pejabat") {
         $scope.trigheadsales();
-      } else if ($scope.user.level = "Kepala Daerah") {
+      } else if ($scope.user.level === "Kepala Daerah") {
         $scope.trigmanager();
       }
   }
@@ -365,10 +363,15 @@ angular.module('starter.controllers', [])
           photo: fileLoadedEvent.target.result
         };
         PickTransactionServices.updatePhoto($scope.item.photo);
+        $ionicPopup.alert({title: 'Upload Success', template: 'Upload from camera success'});
+        $scope.uploaded();
       };
-
       fileReader.readAsDataURL(fileToLoad);
     }
+  };
+
+  $scope.uploaded = function () {
+    $scope.item = { photo: PickTransactionServices.photoSelected };
   };
 
   $scope.createMember = function (user) {
@@ -426,13 +429,16 @@ angular.module('starter.controllers', [])
             fullname: user.fullname,
             picture: photo,
             email: user.email,
+            password: user.password,
             gender: gender,
             level: level,
             datecreated: Date.now(),
             dateupdated: Date.now()
         }
 
-        MembersFactory.saveUser($scope.temp, function (ref) {
+        var membersref = MembersFactory.ref();
+        var newUser = membersref.child($stateParams.userId);
+        newUser.update($scope.temp, function (ref) {
         });
         $ionicLoading.hide();
         $ionicHistory.goBack();
@@ -498,6 +504,7 @@ angular.module('starter.controllers', [])
               fullname: user.fullname,
               picture: photo,
               email: user.email,
+              password: user.password,
               gender: gender,
               level: level,
               datecreated: Date.now(),
@@ -523,6 +530,76 @@ angular.module('starter.controllers', [])
       });
     }
   };
+})
+
+.controller("userCtrl", function($scope, $state, $rootScope, MembersFactory, $ionicLoading, $ionicPopup) {
+  $scope.users = [];
+  $scope.users = MembersFactory.getUsers();
+  $scope.users.$loaded().then(function (x) {
+    refresh($scope.users, $scope, MembersFactory);
+  }).catch(function (error) {
+      console.error("Error:", error);
+  });
+
+  $scope.edit = function(item) {
+    $state.go('app.registration', { userId: item.$id });
+  };
+
+  $scope.assign = function(item) {
+    $state.go('app.registration', { userId: item.$id });
+  };
+
+  $scope.delete = function(item){
+    if (typeof item.$id === 'undefined' || item.$id === '') {
+        $scope.hideValidationMessage = false;
+        $scope.validationMessage = "No Data"
+        return;
+    }
+
+    else{
+
+      $ionicLoading.show({
+          template: '<ion-spinner icon="ios"></ion-spinner><br>Deleting...'
+      });
+      var user = firebase.auth().signInWithEmailAndPassword(item.email,item.password).catch(function(error) {
+          switch (error.code) {
+              case "auth/user-disabled":
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({title: 'Register Failed', template: 'The email has been disable!'});
+                  break;
+              case "auth/invalid-email":
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({title: 'Register Failed', template: 'The specified email is not a valid email!'});
+                  break;
+              case "auth/user-not-found":
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({title: 'Register Failed', template: 'The email not found!'});
+                  break;
+              case "auth/wrong-password":
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({title: 'Register Failed', template: 'The password invalid!'});
+                  break;
+              default:
+                  $ionicLoading.hide();
+                  $ionicPopup.alert({title: 'Register Failed', template: 'Oops. Something went wrong!'});
+          }
+        });
+      user.delete().then(function() {
+        $ionicPopup.alert({title: 'Delete Success', template: 'User has been deleted'});
+      }).catch(function(error) {
+        $ionicPopup.alert({title: 'Delete Error', template: error});
+      });
+      var ref = MembersFactory.ref();
+      var dRef = ref.child(item.$id);
+      dRef.remove();
+      
+      
+      $ionicLoading.hide();
+    }
+  };
+
+  function refresh(users, $scope, MembersFactory) {
+  }
 })
 
 .controller('detprofileCtrl', function($scope, $state, $stateParams, $ionicLoading, $ionicHistory, ContactsFactory, MasterFactory, CurrentUserService, PickTransactionServices, $ionicPopup, myCache) {
@@ -2761,7 +2838,6 @@ angular.module('starter.controllers', [])
   }
 })
 
-
 .controller('loginCtrl', function($scope, $rootScope, $stateParams, $ionicHistory, $cacheFactory, $ionicLoading, $ionicPopup, $state, MembersFactory, myCache, CurrentUserService) {
 
   $scope.user = {};
@@ -2813,42 +2889,6 @@ angular.module('starter.controllers', [])
           });
         });
     }
-})
-
-.controller("userCtrl", function($scope, $state, $rootScope, MembersFactory, $ionicLoading) {
-  $scope.users = [];
-  $scope.users = MembersFactory.getUsers();
-  $scope.users.$loaded().then(function (x) {
-    refresh($scope.users, $scope, MembersFactory);
-  }).catch(function (error) {
-      console.error("Error:", error);
-  });
-
-  $scope.edit = function(item) {
-    $state.go('app.registration', { userId: item.$id });
-  };
-  $scope.delete = function(item){
-    if (typeof item.$id === 'undefined' || item.$id === '') {
-        $scope.hideValidationMessage = false;
-        $scope.validationMessage = "No Data"
-        return;
-    }
-
-    else{
-
-      $ionicLoading.show({
-          template: '<ion-spinner icon="ios"></ion-spinner><br>Deleting...'
-      });
-      var ref = MembersFactory.ref();
-      var dRef = ref.child(item.$id);
-      dRef.remove();
-     
-      $ionicLoading.hide();
-    }
-  };
-
-  function refresh(users, $scope, MembersFactory) {
-  }
 })
 
 .controller('customerCtrl', function($scope, $state, $ionicLoading, CustomerFactory, $ionicPopup, myCache) {
