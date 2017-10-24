@@ -19,6 +19,15 @@ angular.module('starter.controllers', [])
     $scope.modal = modal;
   });
 
+  $scope.closeLogin = function() {
+    $scope.modal.hide();
+  };
+
+  // Open the login modal
+  $scope.login = function() {
+    $scope.modal.show();
+  };
+
   $scope.logOut = function () {
       
       firebase.auth().signOut().then(function() {
@@ -35,14 +44,7 @@ angular.module('starter.controllers', [])
   };// End logOut
 
   // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
-  };
+  
 
   $scope.update = function() {
     if ($scope.level === "Masyarakat") {
@@ -175,12 +177,8 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('dashboardCtrl', function($scope, $state, $timeout, CurrentUserService, myCache, TransactionFactory, ContactsFactory, AccountsFactory, MasterFactory, $compile) {
+.controller('dashboardCtrl', function($scope, $state, $timeout, $ionicModal, $ionicLoading, MembersFactory, $ionicPopup, CurrentUserService, PickTransactionServices, $filter, $cordovaGeolocation, myCache, TransactionFactory, ContactsFactory, AccountsFactory, MasterFactory, $compile) {
 
-  $scope.fullname = CurrentUserService.fullname;
-  $scope.photo = CurrentUserService.picture;
-  $scope.level = CurrentUserService.level;
-  $scope.userid = myCache.get('thisMemberId');
   $scope.reads = 0;
   $scope.shares = 0;
   $scope.access = 0;
@@ -275,8 +273,143 @@ angular.module('starter.controllers', [])
     }).catch(function (error) {
         console.error("Error:", error);
     });
-
   };
+
+  $ionicModal.fromTemplateUrl('templates/addpengaduan.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal = modal;
+  });
+
+  $scope.close = function() {
+    $scope.modal.hide();
+  };
+
+  // Open the login modal
+  $scope.addPengaduan = function() {
+    $scope.modal.show();
+  };
+
+  var options = {timeout: 10000, enableHighAccuracy: true};
+
+  $cordovaGeolocation.getCurrentPosition(options).then(function(position){
+ 
+    var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    var infowindow = new google.maps.InfoWindow();
+    
+ 
+    var mapOptions = {
+      center: latLng,
+      zoom: 17,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+    var input = document.getElementById('cari');
+    var searchBox = new google.maps.places.SearchBox(input);
+    $scope.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    $scope.map.addListener('bounds_changed', function() {
+      searchBox.setBounds($scope.map.getBounds());
+    });
+
+    var markers = [];
+    // Listen for the event fired when the user selects a prediction and retrieve
+    // more details for that place.
+    searchBox.addListener('places_changed', function() {
+      var places = searchBox.getPlaces();
+
+      if (places.length == 0) {
+        return;
+      }
+
+      // Clear out the old markers.
+      markers.forEach(function(marker) {
+        marker.setMap(null);
+      });
+      markers = [];
+
+      // For each place, get the icon, name and location.
+      var bounds = new google.maps.LatLngBounds();
+      places.forEach(function(place) {
+        if (!place.geometry) {
+          console.log("Returned place contains no geometry");
+          return;
+        }
+        var icon = {
+          url: place.icon,
+          size: new google.maps.Size(71, 71),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(17, 34),
+          scaledSize: new google.maps.Size(25, 25)
+        };
+        // Create a marker for each place.
+        var markers = new google.maps.Marker({
+          map: $scope.map,
+          icon: icon,
+          title: place.name,
+          animation: google.maps.Animation.DROP,
+          position: place.geometry.location
+        });
+
+        google.maps.event.addListener(markers, 'click', function() {
+          $scope.pengaduan.locationPengaduan = place.name;
+          $scope.pengaduan.locDetailPengaduan = place.formatted_address;
+          $scope.pengaduan.latPengaduan = place.geometry.location.lat();
+          $scope.pengaduan.lngPengaduan = place.geometry.location.lng();
+          $scope.isLocation = true;
+          infowindow.setContent('<div ng-click="set()"><strong>' + place.name + '</strong><br>'+
+              place.formatted_address + '<strong> Berikan aduan disini?</strong></div>');
+          infowindow.open($scope.map, markers);
+          $scope.modal.show();
+        });
+
+        $scope.set = function () {
+          $scope.propose.location = place.name;
+          $scope.isLocation = true;
+        };
+
+        if (place.geometry.viewport) {
+          // Only geocodes have viewport.
+          bounds.union(place.geometry.viewport);
+        } else {
+          bounds.extend(place.geometry.location);
+        }
+        
+      });
+      $scope.map.fitBounds(bounds);
+    });
+
+    google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+
+      var image = {
+        url: $scope.photo,
+        // This marker is 20 pixels wide by 32 pixels high.
+        size: new google.maps.Size(25, 25),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(25, 25)
+      };
+
+      var marker = new google.maps.Marker({
+          map: $scope.map,
+          animation: google.maps.Animation.DROP,
+          position: latLng,
+          icon: image
+      });      
+     
+      var infoWindow = new google.maps.InfoWindow({
+          content: $scope.fullname
+      });
+     
+      google.maps.event.addListener(marker, 'click', function () {
+          infoWindow.open($scope.map, marker);
+      });
+    });
+  }, function(error){
+    console.log("Could not get location");
+  });
 
   $scope.users = AccountsFactory.getUsers();
   $scope.users.$loaded().then(function (x) {
@@ -285,14 +418,147 @@ angular.module('starter.controllers', [])
       console.error("Error:", error);
   });
 
+  $scope.takepic = function() {
+    
+    var filesSelected = document.getElementById("nameImg").files;
+    if (filesSelected.length > 0) {
+      var fileToLoad = filesSelected[0];
+      var fileReader = new FileReader();
+      fileReader.onload = function(fileLoadedEvent) {
+        var textAreaFileContents = document.getElementById(
+          "textAreaFileContents"
+        );
+        $scope.item = {
+          photo: fileLoadedEvent.target.result
+        };
+        PickTransactionServices.updatePhoto($scope.item.photo);
+        $scope.uploaded();
+      };
+      fileReader.readAsDataURL(fileToLoad);
+    }
+  };
+
+  $scope.createPengaduan = function (pengaduan) {
+      var filesSelected = document.getElementById("nameImg").files;
+      if (filesSelected.length > 0) {
+        var fileToLoad = filesSelected[0];
+        var fileReader = new FileReader();
+        fileReader.onload = function(fileLoadedEvent) {
+          var textAreaFileContents = document.getElementById(
+            "textAreaFileContents"
+          );
+          $scope.item = {
+            photo: fileLoadedEvent.target.result
+          };
+          PickTransactionServices.updatePhoto($scope.item.photo);
+        };
+
+        fileReader.readAsDataURL(fileToLoad);
+      }
+
+      // Validate form data
+      if (typeof pengaduan.locationPengaduan === 'undefined' || pengaduan.locationPengaduan === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Pengaduan failed', template: 'Lokasi belum dipilih!'});
+          return;
+      }
+      if (typeof pengaduan.komentarPengaduan === 'undefined' || pengaduan.komentarPengaduan === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Pengaduan failed', template: 'Pengaduan belum diisi!'});
+          return;
+      }
+
+      if (typeof $scope.item.photo === 'undefined' || $scope.item.photo === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Pengaduan failed', template: 'Foto bukti pengaduan belum dilampirkan'});
+          return;
+      }
+
+      if ($scope.inEditMode) {
+        $ionicLoading.show({
+            template: '<ion-spinner icon="ios"></ion-spinner><br>Editing...'
+        });
+        var photo = $scope.item.photo;
+        var picPengaduan = $scope.fullname;
+        var idPicPengaduan = $scope.userid;
+        $scope.temp = {
+            locationPengaduan: $scope.pengaduan.locationPengaduan,
+            latPengaduan: $scope.pengaduan.latPengaduan,
+            lngPengaduan: $scope.pengaduan.lngPengaduan,
+            locDetailPengaduan: $scope.pengaduan.locDetailPengaduan,
+            komentarPengaduan: pengaduan.komentarPengaduan,
+            picture: photo,
+            datePengaduan: $scope.pengaduan.datePengaduan,
+            picPengaduan: picPengaduan,
+            idPicPengaduan: idPicPengaduan,
+            datecreated: Date.now(),
+            dateupdated: Date.now()
+        }
+
+        /* SAVE MEMBER DATA */
+        var membersref = MembersFactory.ref();
+        var newUser = membersref.child($scope.userid).child("adus");
+        newUser.update($scope.temp);
+
+        var pengref = MembersFactory.pRef();
+        var newAdu = pengref.child($scope.userid);
+        newAdu.update($scope.temp);
+
+        $ionicLoading.hide();
+        $scope.modal.hide();
+
+
+      }else {
+      //PREPARE FOR DATABASE
+        $ionicLoading.show({
+            template: '<ion-spinner icon="ios"></ion-spinner><br>Processing...'
+        });
+        /* PREPARE DATA FOR FIREBASE*/
+        var photo = $scope.item.photo;
+        var picPengaduan = $scope.fullname;
+        var idPicPengaduan = $scope.userid;
+        $scope.temp = {
+            locationPengaduan: $scope.pengaduan.locationPengaduan,
+            latPengaduan: $scope.pengaduan.latPengaduan,
+            lngPengaduan: $scope.pengaduan.lngPengaduan,
+            locDetailPengaduan: $scope.pengaduan.locDetailPengaduan,
+            komentarPengaduan: pengaduan.komentarPengaduan,
+            picture: photo,
+            datePengaduan: $scope.pengaduan.datePengaduan,
+            picPengaduan: picPengaduan,
+            idPicPengaduan: idPicPengaduan,
+            datecreated: Date.now(),
+            dateupdated: Date.now()
+        }
+
+        /* SAVE MEMBER DATA */
+        var membersref = MembersFactory.ref();
+        var newUser = membersref.child($scope.userid).child("adus");
+        newUser.update($scope.temp);
+
+        var pengref = MembersFactory.pRef();
+        var newAdu = pengref.child($scope.userid);
+        newAdu.update($scope.temp);
+
+        $ionicLoading.hide();
+        $scope.modal.hide();
+        $ionicPopup.alert({title: 'Input Success', template: 'Input pengaduan berhasil'});
+      }
+  };
+
+  $scope.uploaded = function () {
+    $scope.item = { photo: PickTransactionServices.photoSelected };
+  };
+
   $scope.$on('$ionicView.beforeEnter', function () {
+    $scope.fullname = CurrentUserService.fullname;
+    $scope.photo = CurrentUserService.picture;
+    $scope.level = CurrentUserService.level;
+    $scope.userid = myCache.get('thisMemberId');
+    $scope.pengaduan = {'datePengaduan': '','locationPengaduan': '','latPengaduan': '','lngPengaduan': '','locDetailPengaduan':'','komentarPengaduan':'','picturePengaduan':''};
+    $scope.pengaduan.datePengaduan = $filter("date")(Date.now(), 'yyyy-MM-dd');
     refresh($scope.blogs, $scope.emails, $scope.overviews, $scope.users, $scope);
   });
-
-      
-      
-
-
 
   function refresh(blogs, emails, overviews, users, $scope, item) {
     
@@ -483,86 +749,86 @@ angular.module('starter.controllers', [])
         $ionicLoading.show({
             template: '<ion-spinner icon="ios"></ion-spinner><br>Registering...'
         });
-      firebase.auth().createUserWithEmailAndPassword(user.email,user.password).catch(function(error) {
-        switch (error.code) {
-            case "auth/email-already-in-use":
-                $ionicLoading.hide();
-                $ionicPopup.alert({title: 'Register Failed', template: 'The email entered is already in use!'});
-                break;
-            case "auth/invalid-email":
-                $ionicLoading.hide();
-                $ionicPopup.alert({title: 'Register Failed', template: 'The specified email is not a valid email!'});
-                break;
-            case "auth/operation-not-allowed":
-                $ionicLoading.hide();
-                $ionicPopup.alert({title: 'Register Failed', template: 'The accounts are not enabled!'});
-                break;
-            case "auth/weak-password":
-                $ionicLoading.hide();
-                $ionicPopup.alert({title: 'Register Failed', template: 'The password not strong enough!'});
-                break;
-            default:
-                $ionicLoading.hide();
-                $ionicPopup.alert({title: 'Register Failed', template: 'Oops. Something went wrong!'});
-        }
-      }).then(function(firebaseUser) {
-        $ionicLoading.hide();
-        firebase.auth().signInWithEmailAndPassword(user.email,user.password).catch(function(error) {
+        firebase.auth().createUserWithEmailAndPassword(user.email,user.password).catch(function(error) {
           switch (error.code) {
-              case "auth/user-disabled":
+              case "auth/email-already-in-use":
                   $ionicLoading.hide();
-                  $ionicPopup.alert({title: 'Register Failed', template: 'The email has been disable!'});
+                  $ionicPopup.alert({title: 'Register Failed', template: 'The email entered is already in use!'});
                   break;
               case "auth/invalid-email":
                   $ionicLoading.hide();
                   $ionicPopup.alert({title: 'Register Failed', template: 'The specified email is not a valid email!'});
                   break;
-              case "auth/user-not-found":
+              case "auth/operation-not-allowed":
                   $ionicLoading.hide();
-                  $ionicPopup.alert({title: 'Register Failed', template: 'The email not found!'});
+                  $ionicPopup.alert({title: 'Register Failed', template: 'The accounts are not enabled!'});
                   break;
-              case "auth/wrong-password":
+              case "auth/weak-password":
                   $ionicLoading.hide();
-                  $ionicPopup.alert({title: 'Register Failed', template: 'The password invalid!'});
+                  $ionicPopup.alert({title: 'Register Failed', template: 'The password not strong enough!'});
                   break;
               default:
                   $ionicLoading.hide();
                   $ionicPopup.alert({title: 'Register Failed', template: 'Oops. Something went wrong!'});
           }
         }).then(function(firebaseUser) {
-          /* PREPARE DATA FOR FIREBASE*/
-          var photo = $scope.item.photo;
-          var gender = $scope.gender;
-          var level = $scope.level;
-          $scope.temp = {
-              fullname: user.fullname,
-              picture: photo,
-              email: user.email,
-              password: user.password,
-              gender: gender,
-              level: level,
-              datecreated: Date.now(),
-              dateupdated: Date.now()
-          }
-
-          /* SAVE MEMBER DATA */
-          var membersref = MembersFactory.ref();
-          var newUser = membersref.child(firebaseUser.uid);
-          newUser.update($scope.temp, function (ref) {
-          addImage = newUser.child("images");
-          });
-          MembersFactory.getMember(firebaseUser).then(function (thisuser) {
-            /* Save user data for later use */
-            myCache.put('thisUserName', thisuser.fullname);
-            myCache.put('thisMemberId', firebaseUser.uid);
-            CurrentUserService.updateUser(thisuser);
-          });
-
           $ionicLoading.hide();
-          $ionicHistory.goBack();
+          firebase.auth().signInWithEmailAndPassword(user.email,user.password).catch(function(error) {
+            switch (error.code) {
+                case "auth/user-disabled":
+                    $ionicLoading.hide();
+                    $ionicPopup.alert({title: 'Register Failed', template: 'The email has been disable!'});
+                    break;
+                case "auth/invalid-email":
+                    $ionicLoading.hide();
+                    $ionicPopup.alert({title: 'Register Failed', template: 'The specified email is not a valid email!'});
+                    break;
+                case "auth/user-not-found":
+                    $ionicLoading.hide();
+                    $ionicPopup.alert({title: 'Register Failed', template: 'The email not found!'});
+                    break;
+                case "auth/wrong-password":
+                    $ionicLoading.hide();
+                    $ionicPopup.alert({title: 'Register Failed', template: 'The password invalid!'});
+                    break;
+                default:
+                    $ionicLoading.hide();
+                    $ionicPopup.alert({title: 'Register Failed', template: 'Oops. Something went wrong!'});
+            }
+          }).then(function(firebaseUser) {
+            /* PREPARE DATA FOR FIREBASE*/
+            var photo = $scope.item.photo;
+            var gender = $scope.gender;
+            var level = $scope.level;
+            $scope.temp = {
+                fullname: user.fullname,
+                picture: photo,
+                email: user.email,
+                password: user.password,
+                gender: gender,
+                level: level,
+                datecreated: Date.now(),
+                dateupdated: Date.now()
+            }
+
+            /* SAVE MEMBER DATA */
+            var membersref = MembersFactory.ref();
+            var newUser = membersref.child(firebaseUser.uid);
+            newUser.update($scope.temp, function (ref) {
+            addImage = newUser.child("images");
+            });
+            MembersFactory.getMember(firebaseUser).then(function (thisuser) {
+              /* Save user data for later use */
+              myCache.put('thisUserName', thisuser.fullname);
+              myCache.put('thisMemberId', firebaseUser.uid);
+              CurrentUserService.updateUser(thisuser);
+            });
+
+            $ionicLoading.hide();
+            $ionicHistory.goBack();
+          });
         });
-      });
-    }
+      }
   };
 })
 
@@ -3296,43 +3562,31 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('pengaduanCtrl', function($scope, $state, $ionicLoading, CustomerFactory, $ionicPopup, myCache) {
+.controller('pengaduanCtrl', function($scope, $state, $ionicLoading, MembersFactory, $ionicPopup, myCache) {
 
-  $scope.customers = [];
-
-  $scope.customers = CustomerFactory.getCustomers();
-  $scope.customers.$loaded().then(function (x) {
-    refresh($scope.customer, $scope, CustomerFactory);
-  }).catch(function (error) {
-      console.error("Error:", error);
-  });
-
-  $scope.$on('$ionicView.beforeEnter', function () {
-    refresh($scope.informations, $scope);
-  });
-
+  $scope.adus = [];
+  $scope.adus = MembersFactory.getPengaduans();
+  
 
   $scope.edit = function(item) {
-    $state.go('app.addcustomer', { customerId: item.$id });
+    $state.go('app.registration', { userId: item.$id });
   };
 
-  $scope.delete = function(item) {
-    $state.go('app.deletecustomer', { customerId: item.$id });
-  };
-
-  $scope.assigncustomer = function(item) {
-    $state.go('app.assigncustomer', { customerId: item.$id });
-  };
-
-  function refresh(informations, $scope, item) {
+  function refresh(adus, $scope, MembersFactory) {
+    
   }
 })
 
-.controller('addpengaduanCtrl', function($scope, $ionicLoading, CustomerFactory, $cordovaGeolocation, $stateParams, CurrentUserService, $ionicPopup, myCache, $ionicHistory) {
+.controller('addpengaduanCtrl', function($scope, $ionicLoading, $ionicModal, CustomerFactory, $cordovaGeolocation, $stateParams, CurrentUserService, $ionicPopup, myCache, $ionicHistory) {
 
   $scope.customer = {'name': '','address': '' ,'email': '' ,'phone': '' ,'gender': ''};
-  $scope.photo = CurrentUserService.picture;
-  $scope.fullname = CurrentUserService.fullname;
+  
+
+  $scope.$on('$ionicView.beforeEnter', function () {
+    $scope.photo = CurrentUserService.picture;
+    $scope.fullname = CurrentUserService.fullname;
+  });
+
   var options = {timeout: 10000, enableHighAccuracy: true};
  
   $cordovaGeolocation.getCurrentPosition(options).then(function(position){

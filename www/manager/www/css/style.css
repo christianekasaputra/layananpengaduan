@@ -730,5 +730,11 @@ span.right {
     border-bottom-color: white;
     /* color: white; */
     border-color: rgba(0,0,0,0.12);
-    width: 100%;
+    width: 80%;
+}
+
+.modal-open .modal, .modal-open .modal-backdrop {
+    width: 50%;
+    height: 50%;
+    margin: auto;
 }

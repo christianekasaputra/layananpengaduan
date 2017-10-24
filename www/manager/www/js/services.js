@@ -73,9 +73,10 @@ angular.module('starter.services', [])
 .factory('MembersFactory', function ($firebaseArray, $q, myCache, $timeout) {
         var fb = firebase.database().ref();
         var ref = fb.child("users");
+        var pRef = fb.child("adus");
         var mRef = {};
-        var aRef = {};
-        var agenRef = {};
+        var peRef = {};
+        var pengaduansRef = {};
         var uRef = {};
         var members = {};
         var usersRef = {};
@@ -84,6 +85,14 @@ angular.module('starter.services', [])
         return {
             ref: function () {
                 return ref;
+            },
+            pRef: function () {
+                return pRef;
+            },
+            getPengaduans: function () {
+                peRef = fb.child("adus");
+                pengaduansRef = $firebaseArray(peRef);
+                return pengaduansRef;
             },
             getUsers: function () {
                 uRef = fb.child("users");

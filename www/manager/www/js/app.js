@@ -299,6 +299,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
 
   .state('app.dashboard', {
 	url: '/dashboard/:memberId/:level',
+  cache: false,
 	views: {
 	'menuContent': {
 	  templateUrl: 'templates/dashboard.html',
