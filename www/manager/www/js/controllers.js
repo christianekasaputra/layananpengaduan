@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, CurrentUserService, TransactionFactory, myCache) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, CurrentUserService, $ionicPopup, TransactionFactory, myCache, $ionicHistory, $state, $rootScope) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -19,6 +19,21 @@ angular.module('starter.controllers', [])
     $scope.modal = modal;
   });
 
+  $scope.logOut = function () {
+      
+      firebase.auth().signOut().then(function() {
+        $ionicHistory.clearCache();
+        $state.reload('app');
+        $scope.isAdmin = false;
+        $scope.isPublic = false;
+        $scope.isPejabat = false;
+        $state.go("login");
+      }, function(error) {
+        $ionicPopup.alert({title: 'Logout Failed', template: error});
+      });
+      
+  };// End logOut
+
   // Triggered in the login modal to close it
   $scope.closeLogin = function() {
     $scope.modal.hide();
@@ -29,12 +44,7 @@ angular.module('starter.controllers', [])
     $scope.modal.show();
   };
 
-  $scope.fullname = CurrentUserService.fullname;
-  $scope.photo = CurrentUserService.picture;
-  $scope.level = CurrentUserService.level;
-  $scope.userid = myCache.get('thisMemberId');
-
-  $scope.$on('$ionicView.beforeEnter', function () {
+  $scope.update = function() {
     if ($scope.level === "Masyarakat") {
       $scope.isPublic = true;
     } else if ($scope.level === "Admin") {
@@ -48,9 +58,17 @@ angular.module('starter.controllers', [])
       $scope.isPublic = true;
       $scope.isPejabat = true;
     }
-  });
+  };
 
   
+
+  $scope.$on('$ionicView.beforeEnter', function () {
+    $scope.fullname = CurrentUserService.fullname;
+    $scope.photo = CurrentUserService.picture;
+    $scope.level = CurrentUserService.level;
+    $scope.userid = myCache.get('thisMemberId');
+    $scope.update();
+  });
 
   $scope.message = "";
   $scope.trigmessage = function() {
@@ -157,7 +175,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('dashboardCtrl', function($scope, CurrentUserService, myCache, TransactionFactory, ContactsFactory, AccountsFactory, MasterFactory, $compile) {
+.controller('dashboardCtrl', function($scope, $state, $timeout, CurrentUserService, myCache, TransactionFactory, ContactsFactory, AccountsFactory, MasterFactory, $compile) {
 
   $scope.fullname = CurrentUserService.fullname;
   $scope.photo = CurrentUserService.picture;
@@ -169,8 +187,6 @@ angular.module('starter.controllers', [])
   $scope.comment = 0;
   $scope.notify = 0;
   $scope.posting = 0;
-  
-  
 
   $scope.doRefresh = function (){
     $scope.reads = 0;
@@ -3228,54 +3244,56 @@ angular.module('starter.controllers', [])
 .controller('loginCtrl', function($scope, $rootScope, $stateParams, $ionicHistory, $cacheFactory, $ionicLoading, $ionicPopup, $state, MembersFactory, myCache, CurrentUserService) {
 
   $scope.user = {};
-    $scope.doLogIn = function (user) {
-        $ionicLoading.show({
-            template: '<ion-spinner icon="ios"></ion-spinner><br>Loggin In...'
-        });
 
-        /* Check user fields*/
-        if (!user.email || !user.password) {
-            $ionicLoading.hide();
-            $ionicPopup.alert({title: 'Login Failed', template: 'Please check your Email or Password!'});
-            return;
+  $scope.doLogIn = function (user) {
+      $ionicLoading.show({
+          template: '<ion-spinner icon="ios"></ion-spinner><br>Loggin In...'
+      });
+
+      /* Check user fields*/
+      if (!user.email || !user.password) {
+          $ionicLoading.hide();
+          $ionicPopup.alert({title: 'Login Failed', template: 'Please check your Email or Password!'});
+          return;
+      }
+
+      /* Authenticate User */
+      firebase.auth().signInWithEmailAndPassword(user.email,user.password).catch(function(error) {
+        switch (error.code) {
+            case "auth/user-disabled":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Login Failed', template: 'The email has been disable!'});
+                break;
+            case "auth/invalid-email":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Login Failed', template: 'The specified email is not a valid email!'});
+                break;
+            case "auth/user-not-found":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Login Failed', template: 'The email not found!'});
+                break;
+            case "auth/wrong-password":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Login Failed', template: 'The password invalid!'});
+                break;
+            default:
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Login Failed', template: 'Oops. Something went wrong!'});
         }
-
-        /* Authenticate User */
-        firebase.auth().signInWithEmailAndPassword(user.email,user.password).catch(function(error) {
-          switch (error.code) {
-              case "auth/user-disabled":
-                  $ionicLoading.hide();
-                  $ionicPopup.alert({title: 'Login Failed', template: 'The email has been disable!'});
-                  break;
-              case "auth/invalid-email":
-                  $ionicLoading.hide();
-                  $ionicPopup.alert({title: 'Login Failed', template: 'The specified email is not a valid email!'});
-                  break;
-              case "auth/user-not-found":
-                  $ionicLoading.hide();
-                  $ionicPopup.alert({title: 'Login Failed', template: 'The email not found!'});
-                  break;
-              case "auth/wrong-password":
-                  $ionicLoading.hide();
-                  $ionicPopup.alert({title: 'Login Failed', template: 'The password invalid!'});
-                  break;
-              default:
-                  $ionicLoading.hide();
-                  $ionicPopup.alert({title: 'Login Failed', template: 'Oops. Something went wrong!'});
-          }
-        }).then(function(firebaseUser) {
-          MembersFactory.getMember(firebaseUser).then(function (thisuser) {
-                    
-              /* Save user data for later use */
-              myCache.put('thisUserName', thisuser.fullname);
-              myCache.put('thisUserLevel', thisuser.level);
-              myCache.put('thisMemberId', firebaseUser.uid);
-              CurrentUserService.updateUser(thisuser);
-                  $ionicLoading.hide();
-                  $state.go('app.dashboard', { memberId: firebaseUser.uid, level: thisuser.level });
-          });
+      }).then(function(firebaseUser) {
+        MembersFactory.getMember(firebaseUser).then(function (thisuser) {
+                  
+            /* Save user data for later use */
+            myCache.put('thisUserName', thisuser.fullname);
+            myCache.put('thisUserLevel', thisuser.level);
+            myCache.put('thisMemberId', firebaseUser.uid);
+            CurrentUserService.updateUser(thisuser);
+                $ionicLoading.hide();
+                $state.reload('app');
+                $state.go('app.dashboard', { memberId: firebaseUser.uid, level: thisuser.level });
         });
-    }
+      });
+  }
 })
 
 .controller('pengaduanCtrl', function($scope, $state, $ionicLoading, CustomerFactory, $ionicPopup, myCache) {
