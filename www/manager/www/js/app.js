@@ -300,7 +300,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
 
   .state('app.dashboard', {
 	url: '/dashboard/:memberId/:level',
-  cache: false,
 	views: {
 	'menuContent': {
 	  templateUrl: 'templates/dashboard.html',
@@ -309,12 +308,32 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
 	 }
   })
 
+.state('app.tanggapan', {
+    url: '/tanggapan',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/tanggapan.html',
+        controller: 'tanggapanCtrl'
+      }
+    }
+  })
+
 .state('app.pengaduan', {
     url: '/pengaduan',
     views: {
       'menuContent': {
         templateUrl: 'templates/pengaduan.html',
         controller: 'pengaduanCtrl'
+      }
+    }
+  })
+
+.state('app.addtanggapan', {
+    url: '/addtanggapann/:tanggapanId',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/addtanggapan.html',
+        controller: 'addtanggapanCtrl'
       }
     }
   })

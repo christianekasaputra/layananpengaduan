@@ -20,6 +20,7 @@
               <th>Bukti</th>
               <th>Tanggal</th>
               <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
 
@@ -34,6 +35,9 @@
             <td>{{adu.datePengaduan}}</td>
             <td><button type="button" class="{{adu.classBtn}}">
               <i class=""> </i> {{adu.statusPengaduan}}
+            </button></td>
+            <td><button type="button" class="btn btn-primary btn-xs" ng-click="edit(adu)">
+              <i class="fa fa-tasks"> </i> Tanggapi
             </button></td>
           </tr>
           </tbody>

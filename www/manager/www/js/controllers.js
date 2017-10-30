@@ -481,6 +481,7 @@ angular.module('starter.controllers', [])
         var photo = $scope.item.photo;
         var picPengaduan = $scope.fullname;
         var idPicPengaduan = $scope.userid;
+        var statuspengaduan = 'Baru';
         $scope.temp = {
             locationPengaduan: $scope.pengaduan.locationPengaduan,
             latPengaduan: $scope.pengaduan.latPengaduan,
@@ -489,6 +490,7 @@ angular.module('starter.controllers', [])
             komentarPengaduan: pengaduan.komentarPengaduan,
             picture: photo,
             datePengaduan: $scope.pengaduan.datePengaduan,
+            statuspengaduan: statuspengaduan,
             picPengaduan: picPengaduan,
             idPicPengaduan: idPicPengaduan,
             datecreated: Date.now(),
@@ -517,6 +519,7 @@ angular.module('starter.controllers', [])
         var photo = $scope.item.photo;
         var picPengaduan = $scope.fullname;
         var idPicPengaduan = $scope.userid;
+        var statuspengaduan = 'Baru';
         $scope.temp = {
             locationPengaduan: $scope.pengaduan.locationPengaduan,
             latPengaduan: $scope.pengaduan.latPengaduan,
@@ -525,6 +528,7 @@ angular.module('starter.controllers', [])
             komentarPengaduan: pengaduan.komentarPengaduan,
             picture: photo,
             datePengaduan: $scope.pengaduan.datePengaduan,
+            statuspengaduan: statuspengaduan,
             picPengaduan: picPengaduan,
             idPicPengaduan: idPicPengaduan,
             datecreated: Date.now(),
@@ -1205,6 +1209,39 @@ angular.module('starter.controllers', [])
   };
 
   function refresh(users, $scope, MembersFactory) {
+  }
+})
+
+.controller('tanggapanCtrl', function($scope, $state, $ionicLoading, MembersFactory, $ionicPopup, myCache) {
+
+  $scope.adus = [];
+  $scope.adus = MembersFactory.getPengaduans();
+  $scope.adus.$loaded().then(function (x) {
+    angular.forEach($scope.adus, function (data) {
+      if (data.$id !== '') {
+        if (data.statusPengaduan == "Baru") {
+            data.classBtn = "btn btn-danger btn-xs";
+        }
+        if (data.statusPengaduan == "On Progress") {
+            data.classBtn = "btn btn-warning btn-xs";
+        }
+        if (data.statusPengaduan == "Done") {
+            data.classBtn = "btn btn-success btn-xs";
+        }
+      }
+    })
+  }).catch(function (error) {
+      console.error("Error:", error);
+  });
+  
+  
+
+  $scope.edit = function(item) {
+    $state.go('app.addtanggapan', { tanggapanId: item.$id });
+  };
+
+  function refresh(adus, $scope, MembersFactory) {
+    
   }
 })
 
@@ -3631,14 +3668,241 @@ angular.module('starter.controllers', [])
 
   $scope.adus = [];
   $scope.adus = MembersFactory.getPengaduans();
+  $scope.adus.$loaded().then(function (x) {
+    angular.forEach($scope.adus, function (data) {
+      if (data.$id !== '') {
+        if (data.statusPengaduan == "Baru") {
+            data.classBtn = "btn btn-danger btn-xs";
+        }
+        if (data.statusPengaduan == "On Progress") {
+            data.classBtn = "btn btn-warning btn-xs";
+        }
+        if (data.statusPengaduan == "Done") {
+            data.classBtn = "btn btn-success btn-xs";
+        }
+      }
+    })
+  }).catch(function (error) {
+      console.error("Error:", error);
+  });
   
 
   $scope.edit = function(item) {
-    $state.go('app.registration', { userId: item.$id });
+    $state.go('app.addtanggapan', { tanggapanId: item.$id });
   };
 
   function refresh(adus, $scope, MembersFactory) {
     
+  }
+})
+
+.controller('addtanggapanCtrl', function($scope, $ionicLoading, $ionicModal, CustomerFactory, $cordovaGeolocation, $stateParams, CurrentUserService, $ionicPopup, myCache, $ionicHistory) {
+
+  $scope.customer = {'name': '','address': '' ,'email': '' ,'phone': '' ,'gender': ''};
+  
+
+  $scope.$on('$ionicView.beforeEnter', function () {
+    $scope.photo = CurrentUserService.picture;
+    $scope.fullname = CurrentUserService.fullname;
+  });
+
+  var options = {timeout: 10000, enableHighAccuracy: true};
+ 
+  $cordovaGeolocation.getCurrentPosition(options).then(function(position){
+ 
+    var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    var infowindow = new google.maps.InfoWindow();
+    
+ 
+    var mapOptions = {
+      center: latLng,
+      zoom: 17,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+    var input = document.getElementById('cari');
+    var searchBox = new google.maps.places.SearchBox(input);
+    $scope.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    $scope.map.addListener('bounds_changed', function() {
+      searchBox.setBounds($scope.map.getBounds());
+    });
+
+    var markers = [];
+    // Listen for the event fired when the user selects a prediction and retrieve
+    // more details for that place.
+    searchBox.addListener('places_changed', function() {
+      var places = searchBox.getPlaces();
+
+      if (places.length == 0) {
+        return;
+      }
+
+      // Clear out the old markers.
+      markers.forEach(function(marker) {
+        marker.setMap(null);
+      });
+      markers = [];
+
+      // For each place, get the icon, name and location.
+      var bounds = new google.maps.LatLngBounds();
+      places.forEach(function(place) {
+        if (!place.geometry) {
+          console.log("Returned place contains no geometry");
+          return;
+        }
+        var icon = {
+          url: place.icon,
+          size: new google.maps.Size(71, 71),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(17, 34),
+          scaledSize: new google.maps.Size(25, 25)
+        };
+        // Create a marker for each place.
+        var markers = new google.maps.Marker({
+          map: $scope.map,
+          icon: icon,
+          title: place.name,
+          animation: google.maps.Animation.DROP,
+          position: place.geometry.location
+        });
+
+        google.maps.event.addListener(markers, 'click', function() {
+          $scope.propose.locationPropose = place.name;
+          $scope.propose.latPropose = place.geometry.location.lat();
+          $scope.propose.lngPropose = place.geometry.location.lng();
+          $scope.isLocation = true;
+          infowindow.setContent('<div ng-click="set()"><strong>' + place.name + '</strong><br>'+
+              place.formatted_address + '</div>');
+          infowindow.open($scope.map, markers);
+        });
+
+        $scope.set = function () {
+          $scope.propose.location = place.name;
+          $scope.isLocation = true;
+        };
+
+        if (place.geometry.viewport) {
+          // Only geocodes have viewport.
+          bounds.union(place.geometry.viewport);
+        } else {
+          bounds.extend(place.geometry.location);
+        }
+        
+      });
+      $scope.map.fitBounds(bounds);
+    });
+
+    google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+
+      var image = {
+        url: $scope.photo,
+        // This marker is 20 pixels wide by 32 pixels high.
+        size: new google.maps.Size(25, 25),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(25, 25)
+      };
+
+      var marker = new google.maps.Marker({
+          map: $scope.map,
+          animation: google.maps.Animation.DROP,
+          position: latLng,
+          icon: image
+      });      
+     
+      var infoWindow = new google.maps.InfoWindow({
+          content: $scope.fullname
+      });
+     
+      google.maps.event.addListener(marker, 'click', function () {
+          infoWindow.open($scope.map, marker);
+      });
+    });
+  }, function(error){
+    console.log("Could not get location");
+  });
+
+  // Gender
+  $scope.male = "";
+  $scope.female = "";
+  $scope.trigmale = function() {
+    $scope.male = "checked";
+    $scope.female = "";
+    $scope.gender = "Pria";
+  };
+  $scope.trigfemale = function() {
+    $scope.male = "";
+    $scope.female = "checked";
+    $scope.gender = "Wanita";
+  };
+
+  $scope.createCustomer = function (customer) {
+
+      // Validate form data
+      if (typeof customer.firstName === 'undefined' || customer.firstName === '') {
+          $scope.hideValidationMessage = false;
+          $scope.validationMessage = "Please enter name"
+          return;
+      }
+      if (typeof customer.telephone === 'undefined' || customer.telephone === '') {
+          $scope.hideValidationMessage = false;
+          $scope.validationMessage = "Please enter phone number"
+          return;
+      }
+      if ($scope.inEditMode) {
+        $ionicLoading.show({
+            template: '<ion-spinner icon="ios"></ion-spinner><br>Editing...'
+        });
+        /* PREPARE DATA FOR FIREBASE*/
+        $scope.temp = {
+            firstName: customer.firstName,
+            alamat: customer.alamat,
+            email: customer.email,
+            telephone: customer.telephone,
+            gender: $scope.gender,
+            addedby: myCache.get('thisMemberId'),
+            dateupdated: Date.now(),
+            isEnable: false
+        }
+        /* SAVE PRODUCT DATA */
+        var newCustomer = CustomerFactory.ref();
+        var newData = newCustomer.child($stateParams.customerId);
+        newData.update($scope.temp, function (ref) {
+        });
+        $ionicHistory.goBack();
+      }
+      else {
+        $ionicLoading.show({
+            template: '<ion-spinner icon="ios"></ion-spinner><br>Adding...'
+        });
+        /* PREPARE DATA FOR FIREBASE*/
+        $scope.temp = {
+            firstName: customer.firstName,
+            alamat: customer.alamat,
+            email: customer.email,
+            telephone: customer.telephone,
+            gender: $scope.gender,
+            addedby: myCache.get('thisMemberId'),
+            dateupdated: Date.now(),
+            isEnable: false
+        }
+        /* SAVE PRODUCT DATA */
+        var newCustomer = CustomerFactory.ref();
+        newCustomer.push($scope.temp);
+        $ionicHistory.goBack();
+      }
+      $ionicLoading.hide();
+      $ionicHistory.goBack();
+      
+      refresh($scope.customer, $scope);
+  };
+
+  function refresh(customer, $scope, temp) {
+
+    $scope.customer = {'name': '','address': '' ,'email': '' ,'phone': '' ,'gender': ''};
   }
 })
 
