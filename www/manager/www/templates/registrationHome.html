@@ -42,7 +42,7 @@
                           <th>Picture</th>
                           <th>User Level</th>
                           <th>Edit</th>
-                          <th>Delete</th>
+                          <th>Action</th>
                         </tr>
                       </thead>
 
@@ -57,7 +57,10 @@
                         <td><button type="button" class="btn btn-primary btn-xs" ng-click="edit(user)">
                               <i class="fa fa-gears"> </i> Edit User
                             </button></td>
-                        <td><button type="button" class="btn btn-primary btn-xs" ng-click="delete(user)">
+                        <td ng-if="!user.isVerif"><button type="button" class="btn btn-primary btn-xs" ng-click="verify(user)">
+                              <i class="fa fa-gears"> </i> Verify User
+                            </button></td>
+                        <td ng-if="user.isVerif"><button type="button" class="btn btn-primary btn-xs" ng-click="delete(user)">
                               <i class="fa fa-gears"> </i> Delete User
                             </button></td>
                       </tr>

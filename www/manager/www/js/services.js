@@ -582,6 +582,7 @@ angular.module('starter.services', [])
             this.fullname = user.fullname;
             this.level = user.level;
             this.email = user.email;
+            this.password = user.password;
             this.id = user.$id;
             this.public_id = user.public_id;
             this.defaultdate = user.defaultdate;

@@ -45,8 +45,8 @@
                   <label>Full Name * :</label>
                   <input type="text" class="form-control" ng-model="user.fullname" required />
 
-                  <label for="email">Email * :</label>
-                  <input type="email" class="form-control" ng-model="user.email" required />
+                  <label for="email" ng-if="!hide">Email * :</label>
+                  <input type="email" class="form-control" ng-model="user.email" ng-if="!hide" required />
 
                   <label for="email" ng-if="!hide">Password * :</label>
                   <input type="password" class="form-control" ng-model="user.password" ng-if="!hide" required />

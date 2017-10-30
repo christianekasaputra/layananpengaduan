@@ -537,8 +537,7 @@ angular.module('starter.controllers', [])
         newUser.update($scope.temp);
 
         var pengref = MembersFactory.pRef();
-        var newAdu = pengref.child($scope.userid);
-        newAdu.update($scope.temp);
+        pengref.push($scope.temp);
 
         $ionicLoading.hide();
         $scope.modal.hide();
@@ -1085,7 +1084,7 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller("userCtrl", function($scope, $state, $rootScope, MembersFactory, $ionicLoading, $ionicPopup) {
+.controller("userCtrl", function($scope, $state, $rootScope, MembersFactory, $ionicLoading, $ionicPopup, CurrentUserService) {
   $scope.users = [];
   $scope.users = MembersFactory.getUsers();
   $scope.users.$loaded().then(function (x) {
@@ -1098,7 +1097,7 @@ angular.module('starter.controllers', [])
     $state.go('app.registration', { userId: item.$id });
   };
 
-  $scope.delete = function(item){
+  $scope.verify = function(item){
     if (typeof item.$id === 'undefined' || item.$id === '') {
         $scope.hideValidationMessage = false;
         $scope.validationMessage = "No Data"
@@ -1108,9 +1107,10 @@ angular.module('starter.controllers', [])
     else{
 
       $ionicLoading.show({
-          template: '<ion-spinner icon="ios"></ion-spinner><br>Deleting...'
+          template: '<ion-spinner icon="ios"></ion-spinner><br>Verifing...'
       });
-      var user = firebase.auth().signInWithEmailAndPassword(item.email,item.password).catch(function(error) {
+      firebase.auth().signOut();
+      firebase.auth().signInWithEmailAndPassword(item.email,item.password).catch(function(error) {
           switch (error.code) {
               case "auth/user-disabled":
                   $ionicLoading.hide();
@@ -1133,6 +1133,39 @@ angular.module('starter.controllers', [])
                   $ionicPopup.alert({title: 'Register Failed', template: 'Oops. Something went wrong!'});
           }
         });
+      var user = firebase.auth().currentUser;
+      $ionicPopup.alert({title: 'Verify Success', template: 'Ready to Delete '+user.email});
+      $scope.temp = {
+              $id: item.$id,
+              isVerif: true
+                  }
+      angular.forEach($scope.users, function (data) {
+        if (user.email == data.email) {
+          if (data.$id == item.$id) {
+              data.isVerif = true;
+          }
+        }
+          
+      })
+      
+      
+      $ionicLoading.hide();
+    }
+  };
+
+  $scope.delete = function(item){
+    if (typeof item.$id === 'undefined' || item.$id === '') {
+        $scope.hideValidationMessage = false;
+        $scope.validationMessage = "No Data"
+        return;
+    }
+
+    else{
+
+      $ionicLoading.show({
+          template: '<ion-spinner icon="ios"></ion-spinner><br>Deleting...'
+      });
+      var user = firebase.auth().currentUser;
       user.delete().then(function() {
         $ionicPopup.alert({title: 'Delete Success', template: 'User has been deleted'});
       }).catch(function(error) {
@@ -1141,7 +1174,31 @@ angular.module('starter.controllers', [])
       var ref = MembersFactory.ref();
       var dRef = ref.child(item.$id);
       dRef.remove();
-      
+      $scope.email = CurrentUserService.email;
+      $scope.password = CurrentUserService.password;
+      firebase.auth().signInWithEmailAndPassword($scope.email,$scope.password).catch(function(error) {
+        switch (error.code) {
+            case "auth/user-disabled":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Login Failed', template: 'The email has been disable!'});
+                break;
+            case "auth/invalid-email":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Login Failed', template: 'The specified email is not a valid email!'});
+                break;
+            case "auth/user-not-found":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Login Failed', template: 'The email not found!'});
+                break;
+            case "auth/wrong-password":
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Login Failed', template: 'The password invalid!'});
+                break;
+            default:
+                $ionicLoading.hide();
+                $ionicPopup.alert({title: 'Login Failed', template: 'Oops. Something went wrong!'});
+        }
+      });
       
       $ionicLoading.hide();
     }
@@ -3110,6 +3167,14 @@ angular.module('starter.controllers', [])
           datecreated: Date.now(),
           dateupdated: Date.now()
       }
+
+      var ubah = firebase.auth().currentUser;
+
+      ubah.updateEmail(user.email).then(function() {
+        // Update successful.
+      }).catch(function(error) {
+        // An error happened.
+      });
 
       var membersref = MembersFactory.ref();
       var newUser = membersref.child($scope.userid);

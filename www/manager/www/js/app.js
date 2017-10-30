@@ -53,6 +53,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
     messagingSenderId: "508166730489"
   };
   var fb = firebase.initializeApp(config);
+
   $stateProvider
 
   .state('login', {
