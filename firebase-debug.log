@@ -1,0 +1,23 @@
+[debug] [2017-10-31T08:48:56.752Z] ----------------------------------------------------------------------
+[debug] [2017-10-31T08:48:56.758Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Rendy-Marojahan\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase deploy
+[debug] [2017-10-31T08:48:56.760Z] CLI Version:   3.13.1
+[debug] [2017-10-31T08:48:56.760Z] Platform:      win32
+[debug] [2017-10-31T08:48:56.760Z] Node Version:  v6.10.2
+[debug] [2017-10-31T08:48:56.761Z] Time:          Tue Oct 31 2017 15:48:56 GMT+0700 (SE Asia Standard Time)
+[debug] [2017-10-31T08:48:56.761Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2017-10-31T08:48:56.840Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2017-10-31T08:48:56.840Z] > authorizing via signed-in user
+[debug] [2017-10-31T08:48:56.846Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2017-10-31T08:48:56.847Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token { refresh_token: '1/6BpHV8aS8K8gKVadWl0Y44Hftuqh-vCx43Y9RZWWfak',
+  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Tue Oct 31 2017 15:48:56 GMT+0700 (SE Asia Standard Time)
+[debug] [2017-10-31T08:48:57.109Z] <<< HTTP RESPONSE 200
+[debug] [2017-10-31T08:48:57.146Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/pegaduan-395e6  
+ Tue Oct 31 2017 15:48:57 GMT+0700 (SE Asia Standard Time)
+[debug] [2017-10-31T08:48:58.190Z] <<< HTTP RESPONSE 200
+[debug] [2017-10-31T08:48:58.192Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/pegaduan-395e6/tokens  
+ Tue Oct 31 2017 15:48:58 GMT+0700 (SE Asia Standard Time)

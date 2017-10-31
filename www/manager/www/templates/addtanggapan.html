@@ -37,18 +37,41 @@
 
                 <!-- start form for validation -->
                 <form >
-                  <label>Lokasi Pengaduan * :</label>
-                  <input type="text" class="form-control" ng-model="pengaduan.locationPengaduan" required />
+                  <label>Lokasi :</label>
+                  <input type="text" class="form-control" ng-model="pengaduan.locationPengaduan" required disabled/>
 
-                  <label for="email">Komentar * :</label>
-                  <textarea class="form-control" ng-model="pengaduan.komentarPengaduan" required></textarea>
+                  <label for="email">Komentar :</label>
+                  <textarea class="form-control" ng-model="pengaduan.komentarPengaduan" required disabled></textarea>
 
-                  <label for="email">Foto Bukti * :</label>
-                  <input ng-click="takepic()" type="file" id="nameImg" ng-model="pengaduan.picturePengaduan" required />
+                  <label>Tindak Lanjut * :</label>
+                  <input type="text" class="form-control" ng-model="pengaduan.tindakPengaduan" required />
+
+                  <label for="email">Laporan Tanggapan * :</label>
+                  <textarea class="form-control" ng-model="pengaduan.laporanPengaduan" required></textarea>
+
+                  <label for="email">Foto Bukti Tanggapan * :</label>
+                  <input ng-click="takepic()" type="file" id="nameImg" ng-model="pengaduan.pictureTanggapan" required />
+
+                  <label>Status *:</label>
+                  <br>
+                    On Progress:
+                    <div class="iradio_flat-green {{progress}}" style="position: relative;">
+                      <input type="radio" class="flat" name="gender" id="genderM" value="M"  required style="position: absolute;opacity: 0;" ng-model="pengaduan.statusPengaduan">
+                      <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);" ng-click="trigprogress()">
+                      </ins>
+                    </div> 
+                    Done:
+                    <div class="iradio_flat-green {{done}}" style="position: relative;">
+                      <input class="iradio_flat-green" type="radio" class="flat" name="gender" id="genderF" value="F" style="position: absolute;opacity: 0;" ng-model="pengaduan.statusPengaduan"/>
+                      <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);" ng-click="trigdone()">
+                      </ins>
+                    </div>
+
+                  <br><br>
 
                   <br>
                   <br>
-                  <span class="btn btn-primary" ng-click="createPengaduan(pengaduan)">Submit</span>
+                  <span class="btn btn-primary" ng-click="addTanggapan(pengaduan)">Submit</span>
 
                 </form>
                 <!-- end form for validations -->

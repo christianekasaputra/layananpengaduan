@@ -96,187 +96,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
       }
     }
   })
-
-
-  .state('app.product', {
-    url: '/product',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/product.html',
-        controller: 'productCtrl'
-      }
-    }
-  })
-
-  .state('app.addproduct', {
-    url: '/addproduct/:productId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/addproduct.html',
-        controller: 'addproductCtrl'
-      }
-    }
-  })
-
-  .state('app.blog', {
-    url: '/blog',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/blog.html',
-        controller: 'blogCtrl'
-      }
-    }
-  })
-
-.state('app.kontrolHarian', {
-    url: '/kontrolHarian',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/kontrolHarian.html',
-        controller: ''
-      }
-    }
-  })
-
-  .state('app.KontrolBulanan', {
-    url: '/kontrolBulanan',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/kontrolBulanan.html',
-        controller: ''
-      }
-    }
-  })  
-
-  .state('app.addblog', {
-    url: '/addblog/:blogId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/addblog.html',
-        controller: 'addblogCtrl'
-      }
-    }
-  })
-
-  .state('app.overview', {
-    url: '/overview',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/overview.html',
-        controller: 'overviewCtrl'
-      }
-    }
-  })
-
-  .state('app.editoverview', {
-    url: '/editoverview/:overviewId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/editoverview.html',
-        controller: 'editoverviewCtrl'
-      }
-    }
-  })
-
-  .state('app.addoverview', {
-    url: '/addoverview',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/addoverview.html',
-        controller: 'addoverviewCtrl'
-      }
-    }
-  })
-
-  .state('app.info', {
-    url: '/info',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/info.html',
-        controller: 'infoCtrl'
-      }
-    }
-  })
-
-  .state('app.editinfo', {
-    url: '/editinfo/:informationId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/editinfo.html',
-        controller: 'editinfoCtrl'
-      }
-    }
-  })
-
-  .state('app.addinfo', {
-    url: '/addinfo',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/addinfo.html',
-        controller: 'addinfoCtrl'
-      }
-    }
-  })
-
-  .state('app.tag', {
-    url: '/tag',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/tag.html',
-        controller: 'tagCtrl'
-      }
-    }
-  })
-
-  .state('app.edittag', {
-    url: '/edittag/:tagId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/edittag.html',
-        controller: 'edittagCtrl'
-      }
-    }
-  })
-
-  .state('app.addtag', {
-    url: '/addtag',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/addtag.html',
-        controller: 'addtagCtrl'
-      }
-    }
-  })
-
-  .state('app.feature', {
-    url: '/feature',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/feature.html',
-        controller: 'featureCtrl'
-      }
-    }
-  })
-
-  .state('app.editfeature', {
-    url: '/editfeature/:featureId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/editfeature.html',
-        controller: 'editfeatureCtrl'
-      }
-    }
-  })
-
-  .state('app.addfeature', {
-    url: '/addfeature',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/addfeature.html',
-        controller: 'addfeatureCtrl'
-      }
-    }
-  })
+  
 
   .state('app.profile', {
     url: '/profile',
@@ -310,6 +130,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
 
 .state('app.tanggapan', {
     url: '/tanggapan',
+    cache: false,
     views: {
       'menuContent': {
         templateUrl: 'templates/tanggapan.html',
@@ -320,6 +141,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
 
 .state('app.pengaduan', {
     url: '/pengaduan',
+    cache: false,
     views: {
       'menuContent': {
         templateUrl: 'templates/pengaduan.html',
@@ -347,60 +169,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
       }
     }
   })
-.state('app.assigncustomer', {
-    url: '/assigncustomer/:customerId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/assigncustomer.html',
-        controller: 'assigncustomerCtrl'
-      }
-    }
-  })
-.state('app.atribut', {
-    url: '/atribut',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/atribut.html',
-        controller: 'registrationCtrl'
-      }
-    }
-  })
-.state('app.addatribut', {
-    url: '/addatribut',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/addatribut.html',
-        controller: 'registrationCtrl'
-      }
-    }
-  })
-.state('app.actcustomer', {
-    url: '/actcustomer',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/actcustomer.html',
-        controller: ''
-      }
-    }
-  })
-.state('app.actagen', {
-    url: '/actagen',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/actagen.html',
-        controller: 'taskCtrl'
-      }
-    }
-  })
-.state('app.agen', {
-    url: '/agen',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/agen.html',
-        controller: 'agenCtrl'
-      }
-    }
-  })
+
 .state('app.uploadcustomer', {
     url: '/uploadcustomer/:customerId',
     views: {

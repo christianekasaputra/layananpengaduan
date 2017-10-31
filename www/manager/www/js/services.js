@@ -94,6 +94,10 @@ angular.module('starter.services', [])
                 pengaduansRef = $firebaseArray(peRef);
                 return pengaduansRef;
             },
+            getPengaduan: function (pengaduanid) {
+                var thisUser = pengaduansRef.$getRecord(pengaduanid);
+                return thisUser;
+            },
             getUsers: function () {
                 uRef = fb.child("users");
                 usersRef = $firebaseArray(uRef);
