@@ -76,7 +76,9 @@ angular.module('starter.services', [])
         var pRef = fb.child("adus");
         var mRef = {};
         var peRef = {};
+        var tgRef = {};
         var pengaduansRef = {};
+        var tanggapansRef = {};
         var uRef = {};
         var members = {};
         var usersRef = {};
@@ -97,6 +99,11 @@ angular.module('starter.services', [])
             getPengaduan: function (pengaduanid) {
                 var thisUser = pengaduansRef.$getRecord(pengaduanid);
                 return thisUser;
+            },
+            getTanggapans: function (userid) {
+                tgRef = fb.child("users").child(userid).child("tanggaps");
+                tanggapansRef = $firebaseArray(tgRef);
+                return tanggapansRef;
             },
             getUsers: function () {
                 uRef = fb.child("users");

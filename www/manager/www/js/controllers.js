@@ -1261,6 +1261,56 @@ angular.module('starter.controllers', [])
   }
 })
 
+.controller('tanggapansCtrl', function($scope, $state, $ionicLoading, MembersFactory, $ionicPopup, myCache) {
+
+  $scope.adus = [];
+  $scope.adus = MembersFactory.getTanggapans($scope.userid);
+  $scope.adus.$loaded().then(function (x) {
+    angular.forEach($scope.adus, function (data) {
+      if (data.$id !== '') {
+        if (data.statusPengaduan == "Baru") {
+            data.classBtn = "btn btn-danger btn-xs";
+        }
+        if (data.statusPengaduan == "On Progress") {
+            data.classBtn = "btn btn-warning btn-xs";
+        }
+        if (data.statusPengaduan == "Done") {
+            data.classBtn = "btn btn-success btn-xs";
+        }
+      }
+    })
+  }).catch(function (error) {
+      console.error("Error:", error);
+  });
+  
+  $scope.$on('$ionicView.beforeEnter', function () {
+    $scope.userid = myCache.get('thisMemberId');
+    $scope.adus.$loaded().then(function (x) {
+      angular.forEach($scope.adus, function (data) {
+        if (data.$id !== '') {
+          if (data.statusPengaduan == "Baru") {
+              data.classBtn = "btn btn-danger btn-xs";
+          }
+          if (data.statusPengaduan == "On Progress") {
+              data.classBtn = "btn btn-warning btn-xs";
+          }
+          if (data.statusPengaduan == "Done") {
+              data.classBtn = "btn btn-success btn-xs";
+          }
+        }
+      })
+    })
+  });
+
+  $scope.edit = function(item) {
+    $state.go('app.addtanggapan', { tanggapanId: item.$id });
+  };
+
+  function refresh(adus, $scope, MembersFactory) {
+    
+  }
+})
+
 .controller('addtanggapanCtrl', function($scope, $ionicLoading, $filter, $ionicModal, MembersFactory, CustomerFactory, $cordovaGeolocation, $stateParams, PickTransactionServices, CurrentUserService, $ionicPopup, myCache, $ionicHistory) {
 
   var getPengaduan = MembersFactory.getPengaduan($stateParams.tanggapanId);

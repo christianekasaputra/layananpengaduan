@@ -139,6 +139,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
     }
   })
 
+.state('app.tanggapans', {
+    url: '/tanggapans',
+    cache: false,
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/tanggapans.html',
+        controller: 'tanggapansCtrl'
+      }
+    }
+  })
+
 .state('app.pengaduan', {
     url: '/pengaduan',
     cache: false,
