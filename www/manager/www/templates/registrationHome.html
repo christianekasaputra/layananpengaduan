@@ -14,33 +14,18 @@
                 <div class="x_panel">
                   <div class="x_title">
                     <h2>Daftar Pengguna <small>Users</small></h2>
-                    <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                      </li>
-                      <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                        <ul class="dropdown-menu" role="menu">
-                          <li><a href="#">Settings 1</a>
-                          </li>
-                          <li><a href="#">Settings 2</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li><a class="close-link"><i class="fa fa-close"></i></a>
-                      </li>
-                    </ul>
                     <div class="clearfix"></div>
                   </div>
                   <div class="x_content">
 
-                    <table id="datatable" class="table table-striped table-bordered orderBy:'fullname'">
+                    <table class="table table-bordered orderBy:'fullname'">
                       <thead>
                         <tr>
-                          <th>Nama Lengkap</th>
-                          <th>Email</th>
-                          <th>Gender</th>
-                          <th>Picture</th>
-                          <th>User Level</th>
+                          <th>Foto</th>
+                          <th class="mobile">Nama Lengkap</th>
+                          <th class="mobile">Email</th>
+                          <th class="mobile">Gender</th>
+                          <th class="mobile">User Level</th>
                           <th>Edit</th>
                           <th>Action</th>
                         </tr>
@@ -49,19 +34,19 @@
 
                       <tbody>
                       <tr ng-repeat="user in users">
-                        <td>{{user.fullname}}</td>
-                        <td>{{user.email}}</td>
-                        <td>{{user.gender}}</td>
                         <td><img src="{{user.picture}}" alt="" class="img-user"></td>
-                        <td>{{user.level}}</td>
+                        <td class="mobile">{{user.fullname}}</td>
+                        <td class="mobile">{{user.email}}</td>
+                        <td class="mobile">{{user.gender}}</td>
+                        <td class="mobile">{{user.level}}</td>
                         <td><button type="button" class="btn btn-primary btn-xs" ng-click="edit(user)">
-                              <i class="fa fa-gears"> </i> Edit User
+                              <i class="fa fa-gears"> </i> Edit
                             </button></td>
-                        <td ng-if="!user.isVerif"><button type="button" class="btn btn-primary btn-xs" ng-click="verify(user)">
-                              <i class="fa fa-gears"> </i> Verify User
+                        <td ng-if="!user.isVerif"><button type="button" class="btn btn-warning btn-xs" ng-click="verify(user)">
+                              <i class="fa fa-gears"> </i> Verify
                             </button></td>
-                        <td ng-if="user.isVerif"><button type="button" class="btn btn-primary btn-xs" ng-click="delete(user)">
-                              <i class="fa fa-gears"> </i> Delete User
+                        <td ng-if="user.isVerif"><button type="button" class="btn btn-danger btn-xs" ng-click="delete(user)">
+                              <i class="fa fa-gears"> </i> Delete
                             </button></td>
                       </tr>
                       </tbody>

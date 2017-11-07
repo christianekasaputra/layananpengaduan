@@ -74,7 +74,7 @@ angular.module('starter.services', [])
         var fb = firebase.database().ref();
         var ref = fb.child("users");
         var pRef = fb.child("adus");
-        var mRef = {};
+        var aRef = {};
         var peRef = {};
         var tgRef = {};
         var pengaduansRef = {};
@@ -109,6 +109,11 @@ angular.module('starter.services', [])
                 uRef = fb.child("users");
                 usersRef = $firebaseArray(uRef);
                 return usersRef;
+            },
+            getPejabats: function () {
+                aRef = fb.child("users").orderByChild("level").equalTo("Pejabat");
+                pejabatRef = $firebaseArray(aRef);
+                return pejabatRef;
             },
             getAgens: function () {
                 aRef = fb.child("users").orderByChild("level").equalTo("Agen");
@@ -429,6 +434,31 @@ angular.module('starter.services', [])
             },
             eRef: function () {
                 return eRef;
+            },
+            getPendidikans: function (userid) {
+                aRef = fb.child("users").child(userid).child("pendidikans");
+                pendidikanRef = $firebaseArray(aRef);
+                return pendidikanRef;
+            },
+            getPekerjaans: function (userid) {
+                bRef = fb.child("users").child(userid).child("pekerjaans");
+                pekerjaanRef = $firebaseArray(bRef);
+                return pekerjaanRef;
+            },
+            getJasas: function (userid) {
+                cRef = fb.child("users").child(userid).child("jasas");
+                jasaRef = $firebaseArray(cRef);
+                return jasaRef;
+            },
+            getKeluargas: function (userid) {
+                dRef = fb.child("users").child(userid).child("keluargas");
+                keluargaRef = $firebaseArray(dRef);
+                return keluargaRef;
+            },
+            getOrganisasis: function (userid) {
+                eRef = fb.child("users").child(userid).child("organisasis");
+                organisasiRef = $firebaseArray(eRef);
+                return organisasiRef;
             },
             getContacts: function () {
                 ref = fb.child("users").orderByKey();

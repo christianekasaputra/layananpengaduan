@@ -179,100 +179,61 @@ angular.module('starter.controllers', [])
 
 .controller('dashboardCtrl', function($scope, $state, $timeout, $ionicModal, $ionicLoading, MembersFactory, $ionicPopup, CurrentUserService, PickTransactionServices, $filter, $cordovaGeolocation, myCache, TransactionFactory, ContactsFactory, AccountsFactory, MasterFactory, $compile) {
 
-  $scope.reads = 0;
-  $scope.shares = 0;
-  $scope.access = 0;
-  $scope.comment = 0;
-  $scope.notify = 0;
-  $scope.posting = 0;
+  $scope.baru = 0;
+  $scope.selesai = 0;
+  $scope.belum = 0;
+  $scope.persenselesai = 0;
+  $scope.persenbelum = 0;
+  $scope.adus = 0;
 
   $scope.doRefresh = function (){
-    $scope.reads = 0;
-    $scope.shares = 0;
-    $scope.access = 0;
-    $scope.comments = 0;
-    $scope.notify = 0;
-    $scope.posting = 0;
+    $scope.baru = 0;
+    $scope.selesai = 0;
+    $scope.belum = 0;
+    $scope.persenselesai = 0;
+    $scope.persenbelum = 0;
+    $scope.jlhadu = 0;
 
-    $scope.emails = [];
-    $scope.emails = TransactionFactory.getEmails();
-    $scope.emails.$loaded().then(function (x) {
-      var notif = 0;
+    $scope.adus = [];
+    $scope.adus = MembersFactory.getPengaduans();
+    $scope.adus.$loaded().then(function (x) {
+      var jlh = 0;
+      var pbaru = 0;
+      var pselesai = 0;
+      var pbelum = 0;
       var index;
       //
-      for (index = 0; index < $scope.emails.length; ++index) {
+      for (index = 0; index < $scope.adus.length; ++index) {
           //
-          var mail = $scope.emails[index];
+          var adu = $scope.adus[index];
           //
-          if (mail.open === false) {
-              notif = notif + 1;
+          if (adu.$id !== '') {
+              jlh = jlh + 1;
+          }
+          if (adu.statusPengaduan === 'Baru') {
+              pbaru = pbaru + 1;
+          }
+          if (adu.statusPengaduan === 'Done') {
+              pselesai = pselesai + 1;
+          }
+          if (adu.statusPengaduan === 'On Progress') {
+              pbelum = pbelum + 1;
           }
       }
-      $scope.notify = notif;
-      refresh($scope.emails, $scope, TransactionFactory);
-    }).catch(function (error) {
-        console.error("Error:", error);
-    });
-
-    $scope.blogs = [];
-    $scope.blogs = TransactionFactory.getBlogs();
-    $scope.blogs.$loaded().then(function (x) {
-      $scope.posting = $scope.blogs.length;     
-      var index;
-      //
-      angular.forEach($scope.blogs, function (blog) {
-          if (blog.reads !== undefined) {
-            var total = $scope.reads;
-            angular.forEach(blog.reads, function () {
-              total++;
-            })
-            $scope.reads = total; 
-          }
-          
-          if (blog.comments !== undefined) {
-            var total = $scope.comments;
-            angular.forEach(blog.comments, function () {
-              total++;
-            })
-            $scope.comments = total; 
-          }
-          
-          if (blog.shares !== undefined) {
-            var total = $scope.shares;
-            angular.forEach(blog.shares, function () {
-              total++;
-            }) 
-            $scope.shares = total;
-          }
-          
-      })
-      refresh($scope.blogs, $scope, TransactionFactory);
+      var persel = parseFloat(pselesai) / parseFloat(jlh);
+      var perbel = parseFloat(pbelum) / parseFloat(jlh);
+      $scope.jlhadu = jlh;
+      $scope.baru = pbaru;
+      $scope.selesai = pselesai;
+      $scope.belum = pbelum;
+      $scope.persenselesai = persel.toFixed(2) * 100;
+      $scope.persenbelum = perbel.toFixed(2) * 100;
+      
     }).catch(function (error) {
         console.error("Error:", error);
     });
 
     
-    $scope.overviews = TransactionFactory.getAccess();
-    $scope.overviews.$loaded().then(function (x) {
-      $scope.access = $scope.overviews.length;
-      refresh($scope.overviews, $scope, TransactionFactory);
-    }).catch(function (error) {
-        console.error("Error:", error);
-    });
-
-    $scope.users = AccountsFactory.getUsers();
-    $scope.users.$loaded().then(function (x) {
-      var juser = 0;
-      var index;
-      //
-      for (index = 0; index < $scope.users.length; ++index) {
-          juser++;
-      }
-      $scope.jumlahuser = juser;
-      $scope.$broadcast('scroll.refreshComplete');
-    }).catch(function (error) {
-        console.error("Error:", error);
-    });
   };
 
   $ionicModal.fromTemplateUrl('templates/addpengaduan.html', {
@@ -558,6 +519,9 @@ angular.module('starter.controllers', [])
     $scope.photo = CurrentUserService.picture;
     $scope.level = CurrentUserService.level;
     $scope.userid = myCache.get('thisMemberId');
+    if ($scope.level === 'Admin' || $scope.level === 'Kepala Daerah') {
+      $scope.isShow = true;
+    }
     $scope.pengaduan = {'datePengaduan': '','locationPengaduan': '','latPengaduan': '','lngPengaduan': '','locDetailPengaduan':'','komentarPengaduan':'','picturePengaduan':''};
     $scope.pengaduan.datePengaduan = $filter("date")(Date.now(), 'yyyy-MM-dd');
     refresh($scope.blogs, $scope.emails, $scope.overviews, $scope.users, $scope);
@@ -582,12 +546,12 @@ angular.module('starter.controllers', [])
   $scope.trigmale = function() {
     $scope.male = "checked";
     $scope.female = "";
-    $scope.gender = "male";
+    $scope.gender = "Laki-laki";
   };
   $scope.trigfemale = function() {
     $scope.male = "";
     $scope.female = "checked";
-    $scope.gender = "female";
+    $scope.gender = "Perempuan";
   };
 
   // User Level
@@ -636,9 +600,9 @@ angular.module('starter.controllers', [])
       $scope.inEditMode = true;
       $scope.user = getUser;
       $scope.item = {'photo': $scope.user.picture};
-      if ($scope.user.gender === "female") {
+      if ($scope.user.gender === "female"  || $scope.user.gender === "Perempuan") {
         $scope.trigfemale();
-      } else if ($scope.user.gender === "male") {
+      } else if ($scope.user.gender === "male" || $scope.user.gender === "Laki-laki") {
         $scope.trigmale();
       }
       if ($scope.user.level === "Admin") {
@@ -1210,6 +1174,691 @@ angular.module('starter.controllers', [])
 
   function refresh(users, $scope, MembersFactory) {
   }
+})
+
+.controller("pejabatCtrl", function($scope, $state, $rootScope, MembersFactory, $ionicLoading, $ionicPopup, CurrentUserService) {
+  
+
+  $scope.$on('$ionicView.beforeEnter', function () {
+    $scope.users = [];
+    $scope.users = MembersFactory.getPejabats();   
+    $scope.users.$loaded().then(function (x) {
+      
+    }).catch(function (error) {
+        console.error("Error:", error);
+    });
+  });
+
+  $scope.edit = function(item) {
+    $state.go('app.kelola', { userId: item.$id });
+  };
+
+  $scope.calAktif = function(data) {
+    $scope.aktif = 0;
+    $scope.selesai = 0;
+    angular.forEach(data.tanggaps, function (tanggap) {
+        //
+        if (tanggap.$id !== '') {
+            $scope.aktif = $scope.aktif + 1;
+        }
+        if (tanggap.statusPengaduan === 'Done') {
+            $scope.selesai = $scope.selesai + 1;
+        }
+    })
+    data.keaktifan = $scope.aktif;
+    data.penyelesaian = $scope.selesai;
+    var persen = parseFloat(data.penyelesaian) / parseFloat(data.keaktifan);
+    data.persen = persen.toFixed(2);
+    if (persen > 0.5) {
+        data.status = "Teladan";
+    }else if (persen <= 0.5) {
+        data.status = "Kurang Teladan";
+    }else {
+        data.status = " Tidak Teladan";
+    }
+  };
+
+  function refresh(users, $scope, MembersFactory) {
+  }
+})
+
+.controller('kelolaCtrl', function($scope, $state, $ionicLoading, $http, $stateParams, $timeout, $ionicHistory, ContactsFactory, MembersFactory, CurrentUserService, PickTransactionServices, $ionicPopup, myCache) {
+
+  $scope.$on('$ionicView.beforeEnter', function () {
+    $scope.userid = $stateParams.userId;
+    ContactsFactory.getUser($scope.userid).then(function(snap) {
+      $scope.user = snap;
+      $scope.item = {'photo': $scope.user.picture};
+      
+      if ($scope.user.pangkat !== '') {
+        $scope.isPangkat = true;
+      }
+      if ($scope.user.jabatan !== '') {
+        $scope.isJabatan = true;
+      }
+      if ($scope.user.agama !== '') {
+        $scope.isAgama = true;
+      }
+      if ($scope.user.perkawinan !== '') {
+        $scope.isKawin = true;
+      }
+      if ($scope.user.gender !== '') {
+        $scope.isGender = true;
+      }
+    })
+    $scope.pendidikans = [];
+    $scope.pekerjaans = [];
+    $scope.jasas = [];
+    $scope.keluargas = [];
+    $scope.organisasis = [];
+    $scope.pendidikans = ContactsFactory.getPendidikans($scope.userid);
+    $scope.pekerjaans = ContactsFactory.getPekerjaans($scope.userid);
+    $scope.jasas = ContactsFactory.getJasas($scope.userid);
+    $scope.keluargas = ContactsFactory.getKeluargas($scope.userid);
+    $scope.organisasis = ContactsFactory.getOrganisasis($scope.userid);
+    
+    $timeout(function () {
+        $http.get('data/agama.json')
+            .success(function (data) {
+                for (var snap = 0; snap < data.length; snap++) {
+                    $scope.features.push(data[snap]);
+                }
+            });
+        $http.get('data/pangkat.json')
+            .success(function (data) {
+                for (var snap = 0; snap < data.length; snap++) {
+                    $scope.pangkats.push(data[snap]);
+                }
+            });
+        $http.get('data/jabatan.json')
+            .success(function (data) {
+                for (var snap = 0; snap < data.length; snap++) {
+                    $scope.jabatans.push(data[snap]);
+                }
+            });
+        $http.get('data/agama.json')
+            .success(function (data) {
+                for (var snap = 0; snap < data.length; snap++) {
+                    $scope.agamas.push(data[snap]);
+                }
+            });
+        $http.get('data/kelamin.json')
+            .success(function (data) {
+                for (var snap = 0; snap < data.length; snap++) {
+                    $scope.kelamins.push(data[snap]);
+                }
+            });
+        $http.get('data/perkawinan.json')
+            .success(function (data) {
+                for (var snap = 0; snap < data.length; snap++) {
+                    $scope.perkawinans.push(data[snap]);
+                }
+            });
+    }, 2000);    
+  });
+
+  $scope.features = [];
+  $scope.pangkats = [];
+  $scope.jabatans = [];
+  $scope.agamas = [];
+  $scope.kelamins = [];
+  $scope.perkawinans = [];
+
+
+
+  $scope.editJabatan = function (data) {
+    if (data) {
+      $scope.datajabat = [];
+      $scope.isJabatan = false;
+    }
+  }
+
+  $scope.changeJabatan = function (data) {
+    if (data) {
+      $scope.user.jabatan = data.title;
+      $scope.isJabatan = true;
+    }
+  }
+
+  $scope.editPangkat = function (data) {
+    if (data) {
+      $scope.datapangkat = [];
+      $scope.isPangkat = false;
+    }
+  }
+
+  $scope.changePangkat = function (data) {
+    if (data) {
+      $scope.user.pangkat = data.title;
+      $scope.isPangkat = true;
+    }
+  }
+
+  $scope.editAgama = function (data) {
+    if (data) {
+      $scope.dataagama = [];
+      $scope.isAgama = false;
+    }
+  }
+
+  $scope.changeAgama = function (data) {
+    if (data) {
+      $scope.user.agama = data.title;
+      $scope.isAgama = true;
+    }
+  }
+
+  $scope.editGender = function (data) {
+    if (data) {
+      $scope.datagender = [];
+      $scope.isGender = false;
+    }
+  }
+
+  $scope.changeGender = function (data) {
+    if (data) {
+      $scope.user.gender = data.title;
+      $scope.isGender = true;
+    }
+  }
+
+  $scope.editKawin = function (data) {
+    if (data) {
+      $scope.dataperkawinan = [];
+      $scope.isKawin = false;
+    }
+  }
+
+  $scope.changeKawin = function (data) {
+    if (data) {
+      $scope.user.perkawinan = data.title;
+      $scope.isKawin = true;
+    }
+  }
+
+  $scope.edit = function (data) {
+    if (data) {
+      data.isEdit = true;
+    }
+  }
+
+  $scope.addedu = function () {
+    $scope.pendidikans.push({"jenjang" : "", "lembaga" : "", "tahun" : "", "isEdit" : true })
+  }
+
+  $scope.saveedu = function (pendidikan) {
+      
+      // Validate form data
+      if (typeof pendidikan.jenjang === 'undefined' || pendidikan.jenjang === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Pendidikan failed', template: 'Jenjang belum diisi'});
+          return;
+      }
+
+      if (typeof pendidikan.lembaga === 'undefined' || pendidikan.lembaga === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Pendidikan failed', template: 'Lembaga belum diisi'});
+          return;
+      }
+      if (typeof pendidikan.tahun === 'undefined' || pendidikan.tahun === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Pendidikan failed', template: 'Tahun belum diisi'});
+          return;
+      }
+
+      $ionicLoading.show({
+          template: '<ion-spinner icon="ios"></ion-spinner><br>Save Pendidikan...'
+      });
+
+      $scope.temp = {
+          jenjang: pendidikan.jenjang,
+          lembaga: pendidikan.lembaga,
+          tahun: pendidikan.tahun,
+          idEdit: false,
+          createdBy: $scope.userid,
+          datecreated: Date.now(),
+          dateupdated: Date.now()
+      }
+
+      if (typeof pendidikan.$id === 'undefined' || pendidikan.$id === '') {
+        var membersref = MembersFactory.ref();
+        var newRef = membersref.child($scope.userid).child("pendidikans");
+        newRef.push($scope.temp);
+      } else {
+        var membersref = MembersFactory.ref();
+        var newRef = membersref.child($scope.userid).child("pendidikans").child(pendidikan.$id);
+        newRef.update($scope.temp);
+      }
+      
+      $ionicLoading.hide();
+      $ionicPopup.alert({title: 'Update Success', template: 'Menyimpan Riwayat Pendidikan berhasil'});
+      $state.reload();
+  };
+
+  $scope.addjob = function () {
+    $scope.pekerjaans.push({"jabatan" : "", "sk" : "", "waktu" : "", "keterangan" : "", "isEdit" : true })
+  }
+
+  $scope.savejob = function (pekerjaan) {
+      
+      // Validate form data
+      if (typeof pekerjaan.jabatan === 'undefined' || pekerjaan.jabatan === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Pekerjaan failed', template: 'Nama Jabatan belum diisi'});
+          return;
+      }
+
+      if (typeof pekerjaan.sk === 'undefined' || pekerjaan.sk === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Pekerjaan failed', template: 'No SK belum diisi'});
+          return;
+      }
+      if (typeof pekerjaan.waktu === 'undefined' || pekerjaan.waktu === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Pekerjaan failed', template: 'Waktu belum diisi'});
+          return;
+      }
+      if (typeof pekerjaan.keterangan === 'undefined' || pekerjaan.keterangan === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Pekerjaan failed', template: 'Keterangan Pekerjaan belum diisi'});
+          return;
+      }
+
+      $ionicLoading.show({
+          template: '<ion-spinner icon="ios"></ion-spinner><br>Save Pekerjaan...'
+      });
+
+      $scope.temp = {
+          jabatan: pekerjaan.jabatan,
+          sk: pekerjaan.sk,
+          waktu: pekerjaan.waktu,
+          keterangan: pekerjaan.keterangan,
+          idEdit: false,
+          createdBy: $scope.userid,
+          datecreated: Date.now(),
+          dateupdated: Date.now()
+      }
+
+      if (typeof pekerjaan.$id === 'undefined' || pekerjaan.$id === '') {
+        var membersref = MembersFactory.ref();
+        var newRef = membersref.child($scope.userid).child("pekerjaans");
+        newRef.push($scope.temp);
+      } else {
+        var membersref = MembersFactory.ref();
+        var newRef = membersref.child($scope.userid).child("pekerjaans").child(pekerjaan.$id);
+        newRef.update($scope.temp);
+      }
+      
+      $ionicLoading.hide();
+      $ionicPopup.alert({title: 'Update Success', template: 'Menyimpan Riwayat Pekerjaan berhasil'});
+      $state.reload();
+  };
+
+  $scope.addjasa = function () {
+    $scope.jasas.push({"penghargaan" : "", "tahun" : "", "pemberi" : "", "isEdit" : true })
+  }
+
+  $scope.savejasa = function (jasa) {
+      
+      // Validate form data
+      if (typeof jasa.penghargaan === 'undefined' || jasa.penghargaan === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Penghargaan failed', template: 'Penghargaan belum diisi'});
+          return;
+      }
+
+      if (typeof jasa.tahun === 'undefined' || jasa.tahun === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Penghargaan failed', template: 'Tahun belum diisi'});
+          return;
+      }
+      if (typeof jasa.pemberi === 'undefined' || jasa.pemberi === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Penghargaan failed', template: 'Waktu belum diisi'});
+          return;
+      }
+
+      $ionicLoading.show({
+          template: '<ion-spinner icon="ios"></ion-spinner><br>Save Penghargaan...'
+      });
+
+      $scope.temp = {
+          penghargaan: jasa.penghargaan,
+          tahun: jasa.tahun,
+          pemberi: jasa.pemberi,
+          idEdit: false,
+          createdBy: $scope.userid,
+          datecreated: Date.now(),
+          dateupdated: Date.now()
+      }
+
+      if (typeof jasa.$id === 'undefined' || jasa.$id === '') {
+        var membersref = MembersFactory.ref();
+        var newRef = membersref.child($scope.userid).child("jasas");
+        newRef.push($scope.temp);
+      } else {
+        var membersref = MembersFactory.ref();
+        var newRef = membersref.child($scope.userid).child("jasas").child(jasa.$id);
+        newRef.update($scope.temp);
+      }
+      
+      $ionicLoading.hide();
+      $ionicPopup.alert({title: 'Update Success', template: 'Menyimpan Riwayat Penghargaan berhasil'});
+      $state.reload();
+  };
+
+  $scope.addkeluarga = function () {
+    $scope.keluargas.push({"nama" : "", "hubungan" : "", "ttl" : "", "keterangan" : "", "isEdit" : true })
+  }
+
+  $scope.savekeluarga = function (keluarga) {
+      
+      // Validate form data
+      if (typeof keluarga.nama === 'undefined' || keluarga.nama === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Keluarga failed', template: 'Nama belum diisi'});
+          return;
+      }
+
+      if (typeof keluarga.hubungan === 'undefined' || keluarga.hubungan === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Keluarga failed', template: 'Hubungan belum diisi'});
+          return;
+      }
+      if (typeof keluarga.ttl === 'undefined' || keluarga.ttl === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Keluarga failed', template: 'Tempat Tanggal Lahir belum diisi'});
+          return;
+      }
+      if (typeof keluarga.pekerjaan === 'undefined' || keluarga.pekerjaan === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Keluarga failed', template: 'Pekerjaan belum diisi'});
+          return;
+      }
+      if (typeof keluarga.keterangan === 'undefined' || keluarga.keterangan === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Keluarga failed', template: 'Keterangan Keluarga belum diisi'});
+          return;
+      }
+
+      $ionicLoading.show({
+          template: '<ion-spinner icon="ios"></ion-spinner><br>Save Keluarga...'
+      });
+
+      $scope.temp = {
+          nama: keluarga.nama,
+          hubungan: keluarga.hubungan,
+          ttl: keluarga.ttl,
+          pekerjaan: keluarga.pekerjaan,
+          keterangan: keluarga.keterangan,
+          idEdit: false,
+          createdBy: $scope.userid,
+          datecreated: Date.now(),
+          dateupdated: Date.now()
+      }
+
+      if (typeof keluarga.$id === 'undefined' || keluarga.$id === '') {
+        var membersref = MembersFactory.ref();
+        var newRef = membersref.child($scope.userid).child("keluargas");
+        newRef.push($scope.temp);
+      } else {
+        var membersref = MembersFactory.ref();
+        var newRef = membersref.child($scope.userid).child("keluargas").child(keluarga.$id);
+        newRef.update($scope.temp);
+      }
+      
+      $ionicLoading.hide();
+      $ionicPopup.alert({title: 'Update Success', template: 'Menyimpan Riwayat Keluarga berhasil'});
+      $state.reload();
+  };
+
+  $scope.addorganisasi = function () {
+    $scope.organisasis.push({"nama" : "", "jabatan" : "", "periode" : "", "isEdit" : true })
+  }
+
+  $scope.saveorganisasi = function (organisasi) {
+      
+      // Validate form data
+      if (typeof organisasi.nama === 'undefined' || organisasi.nama === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Organisasi failed', template: 'Nama Organisasi belum diisi'});
+          return;
+      }
+
+      if (typeof organisasi.jabatan === 'undefined' || organisasi.jabatan === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Organisasi failed', template: 'Jabatan belum diisi'});
+          return;
+      }
+      if (typeof organisasi.periode === 'undefined' || organisasi.periode === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Save Organisasi failed', template: 'Periode belum diisi'});
+          return;
+      }
+
+      $ionicLoading.show({
+          template: '<ion-spinner icon="ios"></ion-spinner><br>Save Organisasi...'
+      });
+
+      $scope.temp = {
+          nama: organisasi.nama,
+          jabatan: organisasi.jabatan,
+          periode: organisasi.periode,
+          idEdit: false,
+          createdBy: $scope.userid,
+          datecreated: Date.now(),
+          dateupdated: Date.now()
+      }
+
+      if (typeof organisasi.$id === 'undefined' || organisasi.$id === '') {
+        var membersref = MembersFactory.ref();
+        var newRef = membersref.child($scope.userid).child("organisasis");
+        newRef.push($scope.temp);
+      } else {
+        var membersref = MembersFactory.ref();
+        var newRef = membersref.child($scope.userid).child("organisasis").child(organisasi.$id);
+        newRef.update($scope.temp);
+      }
+      
+      $ionicLoading.hide();
+      $ionicPopup.alert({title: 'Update Success', template: 'Menyimpan Riwayat Organisasi berhasil'});
+      $state.reload();
+  };
+  
+  // Gender
+  $scope.trigmale = function() {
+    $scope.male = "checked";
+    $scope.female = "";
+    $scope.gender = "male";
+  };
+  $scope.trigfemale = function() {
+    $scope.male = "";
+    $scope.female = "checked";
+    $scope.gender = "female";
+  };
+
+  $scope.takepic = function() {
+    
+    var filesSelected = document.getElementById("nameImg").files;
+    if (filesSelected.length > 0) {
+      var fileToLoad = filesSelected[0];
+      var fileReader = new FileReader();
+      fileReader.onload = function(fileLoadedEvent) {
+        var textAreaFileContents = document.getElementById(
+          "textAreaFileContents"
+        );
+        $scope.item = {
+          photo: fileLoadedEvent.target.result
+        };
+        PickTransactionServices.updatePhoto($scope.item.photo);
+        $ionicPopup.alert({title: 'Upload Success', template: 'Upload from camera success'});
+        $scope.uploaded();
+      };
+      fileReader.readAsDataURL(fileToLoad);
+    }
+  };
+
+  $scope.uploaded = function () {
+    $scope.item = { photo: PickTransactionServices.photoSelected };
+  };
+
+  $scope.createMember = function (user) {
+      var email = user.email;
+      var password = user.password;
+      var filesSelected = document.getElementById("nameImg").files;
+      if (filesSelected.length > 0) {
+        var fileToLoad = filesSelected[0];
+        var fileReader = new FileReader();
+        fileReader.onload = function(fileLoadedEvent) {
+          var textAreaFileContents = document.getElementById(
+            "textAreaFileContents"
+          );
+          $scope.item = {
+            photo: fileLoadedEvent.target.result
+          };
+          PickTransactionServices.updatePhoto($scope.item.photo);
+        };
+
+        fileReader.readAsDataURL(fileToLoad);
+      }
+
+      // Validate form data
+
+      if (typeof user.fullname === 'undefined' || user.fullname === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Nama Lengkap belum diisi'});
+          return;
+      }
+
+      if (typeof user.jabatan === 'undefined' || user.jabatan === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Jabatan belum dipilih'});
+          return;
+      }
+
+      if (typeof user.nik === 'undefined' || user.nik === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'NIK belum diisi'});
+          return;
+      }
+      
+      if (typeof user.nip === 'undefined' || user.nip === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'NIP belum diisi'});
+          return;
+      }
+      if (typeof user.npwp === 'undefined' || user.npwp === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'NPWP belum diisi'});
+          return;
+      }
+
+      if (typeof user.pangkat === 'undefined' || user.pangkat === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Pangkat belum dipilih'});
+          return;
+      }
+
+      if (typeof user.ttl === 'undefined' || user.ttl === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Tempat Tanggal Lahir belum diisi'});
+          return;
+      }
+      if (typeof user.agama === 'undefined' || user.agama === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Agama belum dipilih'});
+          return;
+      }
+      if (typeof user.gender === 'undefined' || user.gender === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Jenis Kelamin belum dipilih'});
+          return;
+      }
+
+      if (typeof user.perkawinan === 'undefined' || user.perkawinan === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Status Perkawinan belum dipilih'});
+          return;
+      }
+
+      if (typeof user.rumah === 'undefined' || user.rumah === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Alamat rumah belum diisi'});
+          return;
+      }
+      if (typeof user.email === 'undefined' || user.email === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Format email belum benar, contoh yang benar abc@abc.com!'});
+          return;
+      }
+      if (typeof user.telrumah === 'undefined' || user.telrumah === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Telepon Rumah belum diisi'});
+          return;
+      }
+
+      if (typeof user.telhp === 'undefined' || user.telhp === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Telepon seluler belum diisi'});
+          return;
+      }
+
+      if (typeof user.kantor === 'undefined' || user.kantor === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Alamat kantor belum diisi'});
+          return;
+      }
+      if (typeof user.telkantor === 'undefined' || user.telkantor === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Telepon kantor belum diisi'});
+          return;
+      }
+
+      if (typeof $scope.item.photo === 'undefined' || $scope.item.photo === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Registration failed', template: 'Foto belum diisi'});
+          return;
+      }
+
+      $ionicLoading.show({
+          template: '<ion-spinner icon="ios"></ion-spinner><br>Updating...'
+      });
+
+      var photo = $scope.item.photo;
+
+      
+
+      $scope.temp = {
+          nip: user.nip,
+          npwp: user.npwp,
+          pangkat: user.pangkat,
+          ttl: user.ttl,
+          jabatan: user.jabatan,
+          agama: user.agama,
+          perkawinan: user.perkawinan,
+          rumah: user.rumah,
+          telrumah: user.telrumah,
+          telhp: user.telhp,
+          kantor: user.kantor,
+          telkantor: user.telkantor,
+          nik: user.nik,
+          fullname: user.fullname,
+          picture: photo,
+          email: user.email,
+          gender: user.gender,
+          createdBy: $scope.userid,
+          dateupdated: Date.now()
+      }
+
+      var membersref = MembersFactory.ref();
+      var newUser = membersref.child($scope.userid);
+      newUser.update($scope.temp);      
+
+      $ionicLoading.hide();
+      $ionicPopup.alert({title: 'Update Success', template: 'Update Daftar Riwyat Hidup Success'});
+      $ionicHistory.goBack();
+      
+  };
 })
 
 .controller('tanggapanCtrl', function($scope, $state, $ionicLoading, MembersFactory, $ionicPopup, myCache) {

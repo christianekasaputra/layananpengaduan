@@ -1,0 +1,265 @@
+  <ion-view>
+  <ion-content>
+    <div class="right_col" role="main">
+      <div class="">
+        <div class="page-title">
+          <div class="title_left">
+            <h3>Kelola Pejabat</h3>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+        
+        <div class="row">
+          <div class="col-md-6 col-xs-12">
+            <div class="x_panel">
+              <div class="x_title">
+                <h2>Daftar Riwayat Hidup <small>Update</small></h2>
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                  </li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="#">Settings 1</a>
+                      </li>
+                      <li><a href="#">Settings 2</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li><a class="close-link"><i class="fa fa-close"></i></a>
+                  </li>
+                </ul>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content">
+                <div class="profile_img">
+                  <div id="crop-avatar">
+                    <!-- Current avatar -->
+                    <img ng-show="item.photo !== undefined" class="img-responsive avatar-view" src="{{ item.photo }}">
+                  </div>
+                </div>
+                <br>
+
+                <!-- start form for validation -->
+                <form >
+                  <label>Nama Lengkap * :</label>
+                  <input type="text" class="form-control" ng-model="user.fullname" required />
+
+                  <label>Jabatan * :</label>
+                  <div>
+                    <select ng-hide="isJabatan" class="select2_single form-control" tabindex="-1" ng-model="datajabat" ng-options="jabatan.title for jabatan in jabatans | orderBy:'title'" ng-change="changeJabatan(datajabat)">
+                    </select>
+                    <input ng-hide="!isJabatan" type="text" class="form-control" ng-model="user.jabatan" ng-click="editJabatan(user)" required>
+                  </div>
+
+                  <label>NIP * :</label>
+                  <input type="number" class="form-control" ng-model="user.nip" required />
+
+                  <label>No KTP * :</label>
+                  <input type="text" class="form-control" ng-model="user.nik" required />
+
+                  <label>NPWP * :</label>
+                  <input type="number" class="form-control" ng-model="user.npwp" required />
+
+                  <label>Pangkat,Gol/Ruang * :</label>
+                  <div>
+                    <select ng-hide="isPangkat" class="select2_single form-control" tabindex="-1" ng-model="datapangkat" ng-options="pangkat.title for pangkat in pangkats | orderBy:'title'" ng-change="changePangkat(datapangkat)">
+                    </select>
+                    <input ng-hide="!isPangkat" type="text" class="form-control" ng-model="user.pangkat" ng-click="editPangkat(user)" required>
+                  </div>
+
+                  <label>Tempat, Tanggal Lahir * :</label>
+                  <input type="text" class="form-control" ng-model="user.ttl" required />
+
+                  <label>Agama * :</label>
+                  <div>
+                    <select ng-hide="isAgama" class="select2_single form-control" tabindex="-1" ng-model="dataagama" ng-options="agama.title for agama in agamas | orderBy:'title'" ng-change="changeAgama(dataagama)">
+                    </select>
+                    <input ng-hide="!isAgama" type="text" class="form-control" ng-model="user.agama" ng-click="editAgama(user)" required>
+                  </div>
+
+                  <label>Jenis Kelamin * :</label>
+                  <div>
+                    <select ng-hide="isGender" class="select2_single form-control" tabindex="-1" ng-model="datagender" ng-options="kelamin.title for kelamin in kelamins | orderBy:'title'" ng-change="changeGender(datagender)">
+                    </select>
+                    <input ng-hide="!isGender" type="text" class="form-control" ng-model="user.gender" ng-click="editGender(user)" required>
+                  </div>
+
+                  <label>Status Perkawinan * :</label>
+                  <div>
+                    <select ng-hide="isKawin" class="select2_single form-control" tabindex="-1" ng-model="dataperkawinan" ng-options="perkawinan.title for perkawinan in perkawinans | orderBy:'title'" ng-change="changeKawin(dataperkawinan)">
+                    </select>
+                    <input ng-hide="!isKawin" type="text" class="form-control" ng-model="user.perkawinan" ng-click="editKawin(user)" required>
+                  </div>
+
+                  <label for="email">Alamat Rumah * :</label>
+                  <textarea class="form-control" ng-model="user.rumah" required></textarea>
+
+                  <label for="email">Telepon Rumah * :</label>
+                  <input type="number" class="form-control" ng-model="user.telrumah" required />
+
+                  <label for="email">Telepon Seluler * :</label>
+                  <input type="number" class="form-control" ng-model="user.telhp" required />
+
+                  <label for="email">Alamat Kantor * :</label>
+                  <textarea class="form-control" ng-model="user.kantor" required></textarea>
+
+                  <label for="email">Telepon Kantor * :</label>
+                  <input type="number" class="form-control" ng-model="user.telkantor" required />
+
+                  <label for="email">Picture * :</label>
+                  <input ng-click="takepic()" type="file" id="nameImg" ng-model="user.picture" required />
+
+                  <button type="button" class="btn btn-primary btn-xs" ng-click="addedu()">
+                    <i class="fa fa-plus-square"> </i> Tambah Pendidikan
+                  </button><br><br>
+                  <table id="datatable" class="table table-striped table-bordered orderBy:'pendidikan.tahun'">
+                    <thead>
+                      <tr>
+                        <th>Jenjang</th>
+                        <th>Nama Sekolah / Lembaga</th>
+                        <th>Tahun</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="pendidikan in pendidikans">
+                      <td ng-if="!pendidikan.isEdit">{{pendidikan.jenjang}}</td><td ng-if="pendidikan.isEdit"><input type="text" ng-model="pendidikan.jenjang" required /></td>
+                      <td ng-if="!pendidikan.isEdit">{{pendidikan.lembaga}}</td><td ng-if="pendidikan.isEdit"><input type="text" ng-model="pendidikan.lembaga" required /></td>
+                      <td ng-if="!pendidikan.isEdit">{{pendidikan.tahun}}</td><td ng-if="pendidikan.isEdit"><input type="number" ng-model="pendidikan.tahun" required /></td>
+                      <td ng-if="!pendidikan.isEdit"><button type="button" class="btn btn-primary btn-xs" ng-click="edit(pendidikan)">
+                            <i class="fa fa-gears"> </i> Edit
+                          </button></td>
+                      <td ng-if="pendidikan.isEdit"><button type="button" class="btn btn-success btn-xs" ng-click="saveedu(pendidikan)">
+                            <i class="fa fa-gears"> </i> Save
+                          </button></td>
+                    </tr>
+                    </tbody>
+                  </table>
+
+                  <button type="button" class="btn btn-primary btn-xs" ng-click="addjob()">
+                    <i class="fa fa-plus-square"> </i> Tambah Riwayat Jabatan / Pekerjaan
+                  </button><br><br>
+                  <table id="datatable" class="table table-striped table-bordered orderBy:'pekerjaan.jabatan'">
+                    <thead>
+                      <tr>
+                        <th>Nama Jabatan</th>
+                        <th>No SK</th>
+                        <th>Waktu Jabatan</th>
+                        <th>Keterangan</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="pekerjaan in pekerjaans">
+                      <td ng-if="!pekerjaan.isEdit">{{pekerjaan.jabatan}}</td><td ng-if="pekerjaan.isEdit"><input type="text" ng-model="pekerjaan.jabatan" required /></td>
+                      <td ng-if="!pekerjaan.isEdit">{{pekerjaan.sk}}</td><td ng-if="pekerjaan.isEdit"><input type="text" ng-model="pekerjaan.sk" required /></td>
+                      <td ng-if="!pekerjaan.isEdit">{{pekerjaan.waktu}}</td><td ng-if="pekerjaan.isEdit"><input type="text" ng-model="pekerjaan.waktu" required /></td>
+                      <td ng-if="!pekerjaan.isEdit">{{pekerjaan.keterangan}}</td><td ng-if="pekerjaan.isEdit"><input type="text" ng-model="pekerjaan.keterangan" required /></td>
+                      <td ng-if="!pekerjaan.isEdit"><button type="button" class="btn btn-primary btn-xs" ng-click="edit(pekerjaan)">
+                            <i class="fa fa-gears"> </i> Edit
+                          </button></td>
+                      <td ng-if="pekerjaan.isEdit"><button type="button" class="btn btn-success btn-xs" ng-click="savejob(pekerjaan)">
+                            <i class="fa fa-gears"> </i> Save
+                          </button></td>
+                    </tr>
+                    </tbody>
+                  </table>
+
+                  <button type="button" class="btn btn-primary btn-xs" ng-click="addjasa()">
+                    <i class="fa fa-plus-square"> </i> Tambah Tanda Jasa / Penghargaan
+                  </button><br><br>
+                  <table id="datatable" class="table table-striped table-bordered orderBy:'jasa.tahun'">
+                    <thead>
+                      <tr>
+                        <th>Nama Penghargaan</th>
+                        <th>Tahun Perolehan</th>
+                        <th>Nama Negara / Instansi yang memberi</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="jasa in jasas">
+                      <td ng-if="!jasa.isEdit">{{jasa.penghargaan}}</td><td ng-if="jasa.isEdit"><input type="text" ng-model="jasa.penghargaan" required /></td>
+                      <td ng-if="!jasa.isEdit">{{jasa.tahun}}</td><td ng-if="jasa.isEdit"><input type="number" ng-model="jasa.tahun" required /></td>
+                      <td ng-if="!jasa.isEdit">{{jasa.pemberi}}</td><td ng-if="jasa.isEdit"><input type="text" ng-model="jasa.pemberi" required /></td>
+                      <td ng-if="!jasa.isEdit"><button type="button" class="btn btn-primary btn-xs" ng-click="edit(jasa)">
+                            <i class="fa fa-gears"> </i> Edit
+                          </button></td>
+                      <td ng-if="jasa.isEdit"><button type="button" class="btn btn-success btn-xs" ng-click="savejasa(jasa)">
+                            <i class="fa fa-gears"> </i> Save
+                          </button></td>
+                    </tr>
+                    </tbody>
+                  </table>
+
+                  <button type="button" class="btn btn-primary btn-xs" ng-click="addkeluarga()">
+                    <i class="fa fa-plus-square"> </i> Tambah Keterangan Keluarga
+                  </button><br><br>
+                  <table id="datatable" class="table table-striped table-bordered orderBy:'keluarga.nama'">
+                    <thead>
+                      <tr>
+                        <th>Nama</th>
+                        <th>Hubungan</th>
+                        <th>Tempat, Tanggal Lahir</th>
+                        <th>Pekerjaan</th>
+                        <th>Keterangan</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="keluarga in keluargas">
+                      <td ng-if="!keluarga.isEdit">{{keluarga.nama}}</td><td ng-if="keluarga.isEdit"><input type="text" ng-model="keluarga.nama" required /></td>
+                      <td ng-if="!keluarga.isEdit">{{keluarga.hubungan}}</td><td ng-if="keluarga.isEdit"><input type="text" ng-model="keluarga.hubungan" required /></td>
+                      <td ng-if="!keluarga.isEdit">{{keluarga.ttl}}</td><td ng-if="keluarga.isEdit"><input type="text" ng-model="keluarga.ttl" required /></td>
+                      <td ng-if="!keluarga.isEdit">{{keluarga.pekerjaan}}</td><td ng-if="keluarga.isEdit"><input type="text" ng-model="keluarga.pekerjaan" required /></td>
+                      <td ng-if="!keluarga.isEdit">{{keluarga.keterangan}}</td><td ng-if="keluarga.isEdit"><input type="text" ng-model="keluarga.keterangan" required /></td>
+                      <td ng-if="!keluarga.isEdit"><button type="button" class="btn btn-primary btn-xs" ng-click="edit(keluarga)">
+                            <i class="fa fa-gears"> </i> Edit
+                          </button></td>
+                      <td ng-if="keluarga.isEdit"><button type="button" class="btn btn-success btn-xs" ng-click="savekeluarga(keluarga)">
+                            <i class="fa fa-gears"> </i> Save
+                          </button></td>
+                    </tr>
+                    </tbody>
+                  </table>
+
+                  <button type="button" class="btn btn-primary btn-xs" ng-click="addorganisasi()">
+                    <i class="fa fa-plus-square"> </i> Tambah Riwayat Organisasi
+                  </button><br><br>
+                  <table id="datatable" class="table table-striped table-bordered orderBy:'organisasi.periode'">
+                    <thead>
+                      <tr>
+                        <th>Nama Organisasi</th>
+                        <th>Jabatan</th>
+                        <th>Periode</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="organisasi in organisasis">
+                      <td ng-if="!organisasi.isEdit">{{organisasi.nama}}</td><td ng-if="organisasi.isEdit"><input type="text" ng-model="organisasi.nama" required /></td>
+                      <td ng-if="!organisasi.isEdit">{{organisasi.jabatan}}</td><td ng-if="organisasi.isEdit"><input type="text" ng-model="organisasi.jabatan" required /></td>
+                      <td ng-if="!organisasi.isEdit">{{organisasi.periode}}</td><td ng-if="organisasi.isEdit"><input type="text" ng-model="organisasi.periode" required /></td>
+                      <td ng-if="!organisasi.isEdit"><button type="button" class="btn btn-primary btn-xs" ng-click="edit(organisasi)">
+                            <i class="fa fa-gears"> </i> Edit
+                          </button></td>
+                      <td ng-if="organisasi.isEdit"><button type="button" class="btn btn-success btn-xs" ng-click="saveorganisasi(organisasi)">
+                            <i class="fa fa-gears"> </i> Save
+                          </button></td>
+                    </tr>
+                    </tbody>
+                  </table>
+
+                  <br><br>
+                  <span class="btn btn-primary" ng-click="createMember(user)">Save</span>
+
+                </form>
+                <!-- end form for validations -->
+
+              </div>
+            </div>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

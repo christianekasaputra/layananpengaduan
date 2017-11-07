@@ -5,42 +5,56 @@
         <div class="page-title">
           <div class="title_left">
             <h3>Daftar Pengaduan</h3>
-            <br>
-
           </div>
         </div>
         <div class="clearfix"></div>
         <br>
-        <table id="datatable" class="table table-striped table-bordered">
-          <thead>
-            <tr>
-              <th>Pengadu</th>
-              <th>Lokasi</th>
-              <th>Komentar</th>
-              <th>Bukti Pengaduan</th>
-              <th>Tanggal</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+        <div class="">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2><i class="fa fa-align-left"></i> Tanggapi <small>Pengaduan</small></h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+
+                    <!-- start accordion -->
+                    <table id="datatable" class="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th class="mobile">Pengadu</th>
+                          <th class="mobile">Lokasi</th>
+                          <th class="mobile">Komentar</th>
+                          <th>Bukti Pengaduan</th>
+                          <th class="mobile">Tanggal</th>
+                          <th>Status</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
 
 
-          <tbody>
-          <!--menampilkan data pelanggan-->
-          <tr ng-repeat="adu in adus">
-            <td>{{adu.picPengaduan}}</td> 
-            <td>{{adu.locationPengaduan}}</td> 
-            <td>{{adu.komentarPengaduan}}</td>
-            <td><img src="{{adu.picture}}" alt="" class="img-user"></td>
-            <td>{{adu.datePengaduan}}</td>
-            <td><button type="button" class="{{adu.classBtn}}">
-              <i class=""> </i> {{adu.statusPengaduan}}
-            </button></td>
-            <td><button type="button" class="btn btn-primary btn-xs" ng-click="edit(adu)">
-              <i class="fa fa-tasks"> </i> Tanggapi
-            </button></td>
-          </tr>
-          </tbody>
-        </table>
+                      <tbody>
+                      <!--menampilkan data pelanggan-->
+                      <tr ng-repeat="adu in adus">
+                        <td class="mobile">{{adu.picPengaduan}}</td> 
+                        <td class="mobile">{{adu.locationPengaduan}}</td> 
+                        <td class="mobile">{{adu.komentarPengaduan}}</td>
+                        <td><img src="{{adu.picture}}" alt="" class="img-user"></td>
+                        <td class="mobile">{{adu.datePengaduan}}</td>
+                        <td><button type="button" class="{{adu.classBtn}}">
+                          <i class=""> </i> {{adu.statusPengaduan}}
+                        </button></td>
+                        <td><button type="button" class="btn btn-primary btn-xs" ng-click="edit(adu)">
+                          <i class="fa fa-tasks"> </i> Tanggapi
+                        </button></td>
+                      </tr>
+                      </tbody>
+                    </table>
+
+
+                  </div>
+                </div>
+              </div>
+        
   </ion-content>
 </ion-view>

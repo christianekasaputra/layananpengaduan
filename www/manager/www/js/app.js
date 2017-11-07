@@ -87,12 +87,32 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
     }
   })
 
+  .state('app.pejabat', {
+    url: '/pejabat',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/pejabat.html',
+        controller: 'pejabatCtrl'
+      }
+    }
+  })
+
   .state('app.registration', {
     url: '/registration/:userId',
     views: {
       'menuContent': {
         templateUrl: 'templates/registration.html',
         controller: 'registrationCtrl'
+      }
+    }
+  })
+
+  .state('app.kelola', {
+    url: '/kelola/:userId',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/kelola.html',
+        controller: 'kelolaCtrl'
       }
     }
   })
