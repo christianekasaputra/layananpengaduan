@@ -1176,6 +1176,56 @@ angular.module('starter.controllers', [])
   }
 })
 
+.controller("masalahCtrl", function($scope, $state, $ionicLoading, MembersFactory, $ionicPopup, myCache) {
+  
+
+  $scope.adus = [];
+  $scope.adus = MembersFactory.getPengaduans();
+  $scope.adus.$loaded().then(function (x) {
+    angular.forEach($scope.adus, function (data) {
+      if (data.$id !== '') {
+        if (data.statusPengaduan == "Baru") {
+            data.classBtn = "btn btn-danger btn-xs";
+        }
+        if (data.statusPengaduan == "On Progress") {
+            data.classBtn = "btn btn-warning btn-xs";
+        }
+        if (data.statusPengaduan == "Done") {
+            data.classBtn = "btn btn-success btn-xs";
+        }
+      }
+    })
+  }).catch(function (error) {
+      console.error("Error:", error);
+  });
+  
+  $scope.$on('$ionicView.beforeEnter', function () {
+    $scope.adus.$loaded().then(function (x) {
+      angular.forEach($scope.adus, function (data) {
+        if (data.$id !== '') {
+          if (data.statusPengaduan == "Baru") {
+              data.classBtn = "btn btn-danger btn-xs";
+          }
+          if (data.statusPengaduan == "On Progress") {
+              data.classBtn = "btn btn-warning btn-xs";
+          }
+          if (data.statusPengaduan == "Done") {
+              data.classBtn = "btn btn-success btn-xs";
+          }
+        }
+      })
+    })
+  });
+
+  $scope.edit = function(item) {
+    $state.go('app.addtanggapan', { tanggapanId: item.$id, isProblem:true });
+  };
+
+  function refresh(adus, $scope, MembersFactory) {
+    
+  }
+})
+
 .controller("pejabatCtrl", function($scope, $state, $rootScope, MembersFactory, $ionicLoading, $ionicPopup, CurrentUserService) {
   
 
@@ -1902,11 +1952,128 @@ angular.module('starter.controllers', [])
   });
 
   $scope.edit = function(item) {
-    $state.go('app.addtanggapan', { tanggapanId: item.$id });
+    $state.go('app.addtanggapan', { tanggapanId: item.$id, isProblem:false });
   };
 
   function refresh(adus, $scope, MembersFactory) {
     
+  }
+})
+
+.controller('anggaranCtrl', function($scope, $state, $ionicLoading, MembersFactory, $ionicPopup, myCache) {
+
+  $scope.anggarans = [];
+  $scope.anggarans = MembersFactory.getAnggarans();
+  $scope.anggarans.$loaded().then(function (x) {
+    angular.forEach($scope.anggarans, function (data) {
+      if (data.$id !== '') {
+        if (data.pagu !== '') {
+            data.sisa = data.pagu;
+        }
+      }
+    })
+  }).catch(function (error) {
+      console.error("Error:", error);
+  });
+  
+  $scope.$on('$ionicView.beforeEnter', function () {
+    $scope.anggarans.$loaded().then(function (x) {
+      angular.forEach($scope.anggarans, function (data) {
+        if (data.$id !== '') {
+          if (data.pagu !== '') {
+              data.sisa = data.pagu;
+          }
+        }
+      })
+    })
+  });
+
+  $scope.edit = function(item) {
+    $state.go('app.addtanggapan', { tanggapanId: item.$id, isProblem:false });
+  };
+
+  function refresh(adus, $scope, MembersFactory) {
+    
+  }
+})
+
+.controller('addanggaranCtrl', function($scope, $ionicLoading, $stateParams, MembersFactory, $ionicPopup, myCache, $ionicHistory) {
+
+  $scope.anggaran = {'program': '','pagu': '' ,'tahun': ''};
+  $scope.userid = myCache.get('thisMemberId');
+  
+
+  $scope.createAnggaran = function (anggaran) {
+
+      // Validate form data
+      if (typeof anggaran.program === 'undefined' || anggaran.program === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Anggaran failed', template: 'Program belum diisi'});
+          return;
+      }
+      if (typeof anggaran.pagu === 'undefined' || anggaran.pagu === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Anggaran failed', template: 'Anggaran belum diisi!'});
+          return;
+      }
+
+      if (typeof anggaran.tahun === 'undefined' || anggaran.tahun === '') {
+          $scope.hideValidationMessage = false;
+          $ionicPopup.alert({title: 'Anggaran failed', template: 'Tahun belum diisi'});
+          return;
+      }
+
+      if ($scope.inEditMode) {
+        $ionicLoading.show({
+            template: '<ion-spinner icon="ios"></ion-spinner><br>Editing...'
+        });
+        var iduser = $scope.userid;
+        $scope.temp = {
+            program: anggaran.program,
+            pagu: anggaran.pagu,
+            tahun: anggaran.tahun,
+            addedby: iduser,
+            datecreated: Date.now(),
+            dateupdated: Date.now()
+        }
+
+        /* SAVE MEMBER DATA */
+        var angref = MembersFactory.angRef();
+        angref.push($scope.temp);
+
+        $ionicLoading.hide();
+        $ionicHistory.goBack();
+
+
+      }else {
+      //PREPARE FOR DATABASE
+        $ionicLoading.show({
+            template: '<ion-spinner icon="ios"></ion-spinner><br>Processing...'
+        });
+        /* PREPARE DATA FOR FIREBASE*/
+        var iduser = $scope.userid;
+        $scope.temp = {
+            program: anggaran.program,
+            pagu: anggaran.pagu,
+            tahun: anggaran.tahun,
+            addedby: iduser,
+            datecreated: Date.now(),
+            dateupdated: Date.now()
+        }
+
+        /* SAVE MEMBER DATA */
+        var angref = MembersFactory.angRef();
+        angref.push($scope.temp);
+
+        $ionicLoading.hide();
+        $ionicHistory.goBack();
+        $ionicPopup.alert({title: 'Input Success', template: 'Input anggaran berhasil'});
+      }
+  };
+
+  function refresh(customer, $scope, temp) {
+
+    $scope.anggaran = {'program': '','pagu': '' ,'tahun': ''};
   }
 })
 
@@ -1971,6 +2138,12 @@ angular.module('starter.controllers', [])
     $scope.fullname = CurrentUserService.fullname;
     $scope.level = CurrentUserService.level;
     $scope.userid = myCache.get('thisMemberId');
+    if ($stateParams.isProblem === 'true') {
+      $scope.isProblem = false;
+    } else if ($stateParams.isProblem === 'false') {
+      $scope.isProblem = true;
+    }
+    
     $scope.dateTanggapan = $filter("date")(Date.now(), 'yyyy-MM-dd');
   });
 
@@ -2014,86 +2187,137 @@ angular.module('starter.controllers', [])
 
   $scope.addTanggapan = function (pengaduan) {
 
-      var filesSelected = document.getElementById("nameImg").files;
-      if (filesSelected.length > 0) {
-        var fileToLoad = filesSelected[0];
-        var fileReader = new FileReader();
-        fileReader.onload = function(fileLoadedEvent) {
-          var textAreaFileContents = document.getElementById(
-            "textAreaFileContents"
-          );
-          $scope.item = {
-            photo: fileLoadedEvent.target.result
-          };
-          PickTransactionServices.updatePhoto($scope.item.photo);
-        };
-
-        fileReader.readAsDataURL(fileToLoad);
-      }
-
-      // Validate form data
-      if (typeof pengaduan.tindakPengaduan === 'undefined' || pengaduan.tindakPengaduan === '') {
-          $scope.hideValidationMessage = false;
-          $ionicPopup.alert({title: 'Tanggapan failed', template: 'Tindakan belum diisi!'});
-          return;
-      }
-      if (typeof pengaduan.laporanPengaduan === 'undefined' || pengaduan.laporanPengaduan === '') {
-          $scope.hideValidationMessage = false;
-          $ionicPopup.alert({title: 'Tanggapan failed', template: 'Laporan belum diisi!'});
-          return;
-      }
-
-      if (typeof $scope.item.photo === 'undefined' || $scope.item.photo === '') {
-          $scope.hideValidationMessage = false;
-          $ionicPopup.alert({title: 'Tanggapan failed', template: 'Foto bukti tanggapan belum dilampirkan'});
-          return;
-      }
-
       
-      //PREPARE FOR DATABASE
-        $ionicLoading.show({
-            template: '<ion-spinner icon="ios"></ion-spinner><br>Processing...'
-        });
-        /* PREPARE DATA FOR FIREBASE*/
-        var photo = $scope.item.photo;
-        var picTanggapan = $scope.fullname;
-        var idPicTanggapan = $scope.userid;
-        var statusPengaduan = $scope.status;
-        $scope.temp = {
-            locationPengaduan: pengaduan.locationPengaduan,
-            latPengaduan: pengaduan.latPengaduan,
-            lngPengaduan: pengaduan.lngPengaduan,
-            locDetailPengaduan: pengaduan.locDetailPengaduan,
-            komentarPengaduan: pengaduan.komentarPengaduan,
-            picture: pengaduan.picture,
-            datePengaduan: pengaduan.datePengaduan,
-            picPengaduan: pengaduan.picPengaduan,
-            idPicPengaduan: pengaduan.idPicPengaduan,
-            tindakPengaduan: pengaduan.tindakPengaduan,
-            laporanPengaduan: pengaduan.laporanPengaduan,
-            pictureTanggapan: photo,
-            dateTanggapan: $scope.dateTanggapan,
-            statusPengaduan: statusPengaduan,
-            picTanggapan: picTanggapan,
-            idPicTanggapan: idPicTanggapan,
-            dateupdated: Date.now()
+
+      if ($stateParams.isProblem === 'false') {
+
+        var filesSelected = document.getElementById("nameImg").files;
+        if (filesSelected.length > 0) {
+          var fileToLoad = filesSelected[0];
+          var fileReader = new FileReader();
+          fileReader.onload = function(fileLoadedEvent) {
+            var textAreaFileContents = document.getElementById(
+              "textAreaFileContents"
+            );
+            $scope.item = {
+              photo: fileLoadedEvent.target.result
+            };
+            PickTransactionServices.updatePhoto($scope.item.photo);
+          };
+
+          fileReader.readAsDataURL(fileToLoad);
         }
 
-        /* SAVE MEMBER DATA */
-        var pengref = MembersFactory.pRef();
-        var newAdu = pengref.child($stateParams.tanggapanId);
-        newAdu.update($scope.temp);
-        
-        var membersref = MembersFactory.ref();
-        var newUser = membersref.child(pengaduan.idPicPengaduan).child("adus").child($stateParams.tanggapanId);
-        newUser.update($scope.temp);
-        var newTanggap = membersref.child($scope.userid).child("tanggaps").child($stateParams.tanggapanId);
-        newTanggap.update($scope.temp);
+        // Validate form data
+        if (typeof pengaduan.tindakPengaduan === 'undefined' || pengaduan.tindakPengaduan === '') {
+            $scope.hideValidationMessage = false;
+            $ionicPopup.alert({title: 'Tanggapan failed', template: 'Tindakan belum diisi!'});
+            return;
+        }
+        if (typeof pengaduan.laporanPengaduan === 'undefined' || pengaduan.laporanPengaduan === '') {
+            $scope.hideValidationMessage = false;
+            $ionicPopup.alert({title: 'Tanggapan failed', template: 'Laporan belum diisi!'});
+            return;
+        }
 
-        $ionicLoading.hide();
-        $scope.modal.hide();
-        $ionicPopup.alert({title: 'Input Success', template: 'Input tanggapan berhasil'});
-        $ionicHistory.goBack();
+        if (typeof $scope.item.photo === 'undefined' || $scope.item.photo === '') {
+            $scope.hideValidationMessage = false;
+            $ionicPopup.alert({title: 'Tanggapan failed', template: 'Foto bukti tanggapan belum dilampirkan'});
+            return;
+        }
+
+        if (typeof $scope.status === 'undefined' || $scope.status === '') {
+            $scope.hideValidationMessage = false;
+            $ionicPopup.alert({title: 'Tanggapan failed', template: 'Status belum dipilih'});
+            return;
+        }
+
+        
+        //PREPARE FOR DATABASE
+          $ionicLoading.show({
+              template: '<ion-spinner icon="ios"></ion-spinner><br>Processing...'
+          });
+          /* PREPARE DATA FOR FIREBASE*/
+          var photo = $scope.item.photo;
+          var picTanggapan = $scope.fullname;
+          var idPicTanggapan = $scope.userid;
+          var statusPengaduan = $scope.status;
+          $scope.temp = {
+              locationPengaduan: pengaduan.locationPengaduan,
+              latPengaduan: pengaduan.latPengaduan,
+              lngPengaduan: pengaduan.lngPengaduan,
+              locDetailPengaduan: pengaduan.locDetailPengaduan,
+              komentarPengaduan: pengaduan.komentarPengaduan,
+              picture: pengaduan.picture,
+              datePengaduan: pengaduan.datePengaduan,
+              picPengaduan: pengaduan.picPengaduan,
+              idPicPengaduan: pengaduan.idPicPengaduan,
+              tindakPengaduan: pengaduan.tindakPengaduan,
+              laporanPengaduan: pengaduan.laporanPengaduan,
+              pictureTanggapan: photo,
+              dateTanggapan: $scope.dateTanggapan,
+              statusPengaduan: statusPengaduan,
+              picTanggapan: picTanggapan,
+              idPicTanggapan: idPicTanggapan,
+              dateupdated: Date.now()
+          }
+
+            /* SAVE MEMBER DATA */
+            var pengref = MembersFactory.pRef();
+            var newAdu = pengref.child($stateParams.tanggapanId);
+            newAdu.update($scope.temp);
+            
+            var membersref = MembersFactory.ref();
+            var newUser = membersref.child(pengaduan.idPicPengaduan).child("adus").child($stateParams.tanggapanId);
+            newUser.update($scope.temp);
+            var newTanggap = membersref.child($scope.userid).child("tanggaps").child($stateParams.tanggapanId);
+            newTanggap.update($scope.temp);
+
+            $ionicLoading.hide();
+            $scope.modal.hide();
+            $ionicPopup.alert({title: 'Input Success', template: 'Input tanggapan berhasil'});
+            $ionicHistory.goBack();
+      } else if ($stateParams.isProblem === 'true') {
+
+        // Validate form data
+        if (typeof pengaduan.kategoriPengaduan === 'undefined' || pengaduan.kategoriPengaduan === '') {
+            $scope.hideValidationMessage = false;
+            $ionicPopup.alert({title: 'Pemetaan failed', template: 'Kategori belum diisi!'});
+            return;
+        }
+        if (typeof pengaduan.pencegahanPengaduan === 'undefined' || pengaduan.pencegahanPengaduan === '') {
+            $scope.hideValidationMessage = false;
+            $ionicPopup.alert({title: 'Pemetaan failed', template: 'Pencegahan Masalah belum diisi!'});
+            return;
+        }
+
+        
+        //PREPARE FOR DATABASE
+          $ionicLoading.show({
+              template: '<ion-spinner icon="ios"></ion-spinner><br>Processing...'
+          });
+          /* PREPARE DATA FOR FIREBASE*/
+          $scope.temp = {
+              kategoriPengaduan: pengaduan.kategoriPengaduan,
+              pencegahanPengaduan: pengaduan.pencegahanPengaduan,
+              dateupdated: Date.now()
+          }
+          /* SAVE MEMBER DATA */
+          var pengref = MembersFactory.pRef();
+          var newAdu = pengref.child($stateParams.tanggapanId);
+          newAdu.update($scope.temp);
+          
+          var membersref = MembersFactory.ref();
+          var newUser = membersref.child(pengaduan.idPicPengaduan).child("adus").child($stateParams.tanggapanId);
+          newUser.update($scope.temp);
+
+          $ionicLoading.hide();
+          $scope.modal.hide();
+          $ionicPopup.alert({title: 'Pemetaan Success', template: 'Pemetaan Masalah berhasil'});
+          $ionicHistory.goBack();
+      }
+
+        
   };
 
   function refresh(customer, $scope, temp) {

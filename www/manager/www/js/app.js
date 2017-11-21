@@ -97,6 +97,26 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
     }
   })
 
+  .state('app.masalah', {
+    url: '/masalah',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/masalah.html',
+        controller: 'masalahCtrl'
+      }
+    }
+  })
+
+  .state('app.anggaran', {
+    url: '/anggaran',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/anggaran.html',
+        controller: 'anggaranCtrl'
+      }
+    }
+  })
+
   .state('app.registration', {
     url: '/registration/:userId',
     views: {
@@ -182,7 +202,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
   })
 
 .state('app.addtanggapan', {
-    url: '/addtanggapann/:tanggapanId',
+    url: '/addtanggapann/:tanggapanId/:isProblem',
+    cache: false,
     views: {
       'menuContent': {
         templateUrl: 'templates/addtanggapan.html',
@@ -197,6 +218,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-datepicker', '
       'menuContent': {
         templateUrl: 'templates/addpengaduan.html',
         controller: 'addpengaduanCtrl'
+      }
+    }
+  })
+
+.state('app.addanggaran', {
+    url: '/addanggaran/:anggaranId',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/addanggaran.html',
+        controller: 'addanggaranCtrl'
       }
     }
   })

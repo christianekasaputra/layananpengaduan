@@ -74,6 +74,7 @@ angular.module('starter.services', [])
         var fb = firebase.database().ref();
         var ref = fb.child("users");
         var pRef = fb.child("adus");
+        var angRef = fb.child("anggarans");
         var aRef = {};
         var peRef = {};
         var tgRef = {};
@@ -91,10 +92,18 @@ angular.module('starter.services', [])
             pRef: function () {
                 return pRef;
             },
+            angRef: function () {
+                return angRef;
+            },
             getPengaduans: function () {
                 peRef = fb.child("adus");
                 pengaduansRef = $firebaseArray(peRef);
                 return pengaduansRef;
+            },
+            getAnggarans: function () {
+                Ref = fb.child("anggarans");
+                anggaransRef = $firebaseArray(Ref);
+                return anggaransRef;
             },
             getPengaduan: function (pengaduanid) {
                 var thisUser = pengaduansRef.$getRecord(pengaduanid);

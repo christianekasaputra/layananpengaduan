@@ -44,16 +44,25 @@
                   <textarea class="form-control" ng-model="pengaduan.komentarPengaduan" required disabled></textarea>
 
                   <label>Tindak Lanjut * :</label>
-                  <input type="text" class="form-control" ng-model="pengaduan.tindakPengaduan" required />
+                  <input ng-if="isProblem" type="text" class="form-control" ng-model="pengaduan.tindakPengaduan" required />
+                  <input ng-if="!isProblem" type="text" class="form-control" ng-model="pengaduan.tindakPengaduan" required disabled/>
 
                   <label for="email">Laporan Tanggapan * :</label>
-                  <textarea class="form-control" ng-model="pengaduan.laporanPengaduan" required></textarea>
+                  <textarea ng-if="isProblem" class="form-control" ng-model="pengaduan.laporanPengaduan" required></textarea>
+                  <textarea ng-if="!isProblem" class="form-control" ng-model="pengaduan.laporanPengaduan" required disabled></textarea>
 
-                  <label for="email">Foto Bukti Tanggapan * :</label>
-                  <input ng-click="takepic()" type="file" id="nameImg" ng-model="pengaduan.pictureTanggapan" required />
+                  <label>Kategori * :</label>
+                  <input ng-if="!isProblem" type="text" class="form-control" ng-model="pengaduan.kategoriPengaduan" required />
 
-                  <label>Status *:</label>
+                  <label>Pencegahan Masalah * :</label>
+                  <input ng-if="!isProblem" type="text" class="form-control" ng-model="pengaduan.pencegahanPengaduan" required />
+
+                  <label ng-if="isProblem" for="email">Foto Bukti Tanggapan * :</label>
+                  <input ng-if="isProblem" ng-click="takepic()" type="file" id="nameImg" ng-model="pengaduan.pictureTanggapan" required />
+
+                  <label ng-if="isProblem">Status *:</label>
                   <br>
+                  <div ng-if="isProblem">
                     On Progress:
                     <div class="iradio_flat-green {{progress}}" style="position: relative;">
                       <input type="radio" class="flat" name="gender" id="genderM" value="M"  required style="position: absolute;opacity: 0;" ng-model="pengaduan.statusPengaduan">
@@ -66,6 +75,7 @@
                       <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);" ng-click="trigdone()">
                       </ins>
                     </div>
+                  </div>
 
                   <br><br>
 
